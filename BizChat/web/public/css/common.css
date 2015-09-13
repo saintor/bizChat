@@ -1,0 +1,79 @@
+
+/*热门*/
+li.hot:before{
+    position: absolute;
+    content:'';
+    width: 35px;
+    height: 10px;
+    left: 3.5em;
+    top: 0;
+    background:url(../img/hot.png) no-repeat;
+    background-size: 26px auto;
+    -webkit-animation: autoMove .5s linear infinite alternate;
+    -moz-animation: autoMove .5s linear infinite alternate;
+    -ms-animation: autoMove .5s linear infinite alternate;
+    -o-animation: autoMove .5s linear infinite alternate;
+    animation: autoMove .5s linear infinite alternate;
+}
+/*文字居中*/
+.text_center{
+    text-align: center;
+}
+/*灰色字体*/
+.gray{
+    color: #949191;
+}
+
+/*提示信息*/
+.chat-thread li.sys_info{
+    width: 100%;
+    font-size: 12px;
+    margin-left: -16px;
+    height: 30px;
+    line-height: 15px;
+    overflow: hidden;
+    background:rgba(255,255,255,0);
+    color: #BDBBBB;
+    /*background: url(../img/info.png) no-repeat;*/
+    /*background-size: 25px 25px;*/
+    /*background-position: 0 center;*/
+}
+li.sys_info:before{
+    border: none;
+}
+.chat-thread li.sys_info img{
+    width: 14px;
+    height: 14px;
+    float: left;
+    margin-right: 2px;
+}
+
+
+
+/***************动画函数*************/
+/*闪动*/
+@-webkit-keyframes autoMove {
+    0%{top: 2px}
+50%{top: 0}
+100%{top: -2px}
+}
+@keyframes autoMove {
+    0%{top: 2px}
+50%{top: 0}
+100%{top: -2px}
+}
+@-o-keyframes autoMove {
+    0%{top: 2px}
+50%{top: 0}
+100%{top: -2px}
+}
+@-moz-keyframes autoMove {
+    0%{top: 2px}
+50%{top: 0}
+100%{top: -2px}
+}
+@-ms-keyframes autoMove {
+    0%{top: 2px}
+50%{top: 0}
+100%{top: -2px}
+}
