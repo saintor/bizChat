@@ -3,7 +3,31 @@
  */
 
 $(function(){
-    $(roomlist).appendTo('.st_tree');
+    //$(roomlist).appendTo('.st_tree');
+    $.ajax({
+        url:"contents",
+        success: function (data) {
+            var roomlist = data + '</ul>';
+            $(roomlist).appendTo('.st_tree');
+        ///$(".st_tree").html(roomList);                          
+        }
+    })
+    
+    /*$.get("contents", {
+        //"type" : rooms
+        }, function(data) {
+            setTimeout(function () {
+                var roomMeta = data + '</ul>;';
+                if(roomMeta.length > 30){             
+                    $(roomMeta).appendTo('.st_tree');
+                    $(".tree a").on("click", function () {
+                        $(".tip").text($(this).text())
+                    })
+                }
+            },1000);
+        //$('.st_tree').html(roomMeta);
+        });*/
+
     var editor = new Simditor({
         textarea: $('#chat'),
         toolbar:['emoji','color', 'image'],
@@ -18,7 +42,15 @@ $(function(){
             leaveConfirm: 'Uploading is in progress, are you sure to leave this page?'
         }
     });
-
+    
+    $(".st_tree").SimpleTree({
+        /* 可无视代码部分*/
+        click:function(a){
+            if(!$(a).attr("hasChild"))
+                alert($(a).attr("ref"));
+        }
+    });
+    
     $('.right-side-tab').find('.tab').click(function(){
         $('.right-side-tab').find('.tab').attr('class','tab');
         $(this).addClass('active');
@@ -30,15 +62,6 @@ $(function(){
     //    assign:'chat',
     //    path:'public/img/emotion/'	//表情存放的路径
     //});
-
-
-    $(".st_tree").SimpleTree({
-        /* 可无视代码部分*/
-        click:function(a){
-            if(!$(a).attr("hasChild"))
-                alert($(a).attr("ref"));
-        }
-    });
 
     drag('.title-bar');
     closeDialog();
@@ -78,12 +101,13 @@ $(function(){
         };
 
         var userlist=[];
+        var roomlist=[];
         //服务器端
         Chat.socket.onmessage = function (message) {
             if(message.data.indexOf("*ULGNN") >= 0){
                 $('#chat-body').data('uid',message.data.substring(7,message.data.length).trim());  
             }else if(message.data.indexOf("*ULIST") >= 0){
-                var jsonStr = message.data.substring(7,message.data.length); 
+                var jsonStr = message.data.substring(7,message.data.length);
                 var rfc = eval("("+jsonStr+")");
                 userlist = rfc;
                 //var rfc = eval("("+message.data+")");
@@ -93,18 +117,46 @@ $(function(){
                 for(var i=0;i<rfc.length;i++){
                     Console.list(rfc[i].name,rfc[i].info);
                 }                           
+            }else if(message.data.indexOf("*UROOMS") >= 0){
+                var jsonRooms = message.data.substring(7,message.data.length);
+                var rfc = eval("("+jsonRooms+")");
+                roomlist = rfc;
+
+                Chat.extractString = function(base){
+                    for(var i=0;i<rfc.length;i++){
+                        if(rfc[i].name.substr(rfc[i].name.length-base.length, base.length) == base)
+                            return rfc[i].name;
+                    }
+                    return "false";
+                }
+                
+                $(".tree a").on("click", function () {
+                    var base;
+                    if($(this).parent("li").parent("ul").prev().text() ==''){
+                        base = $(this).text();
+                    }else{
+                        base = $(this).parent("li").parent("ul").prev().text() + '/' + $(this).text();
+                    }
+                    var result = Chat.extractString(base);
+                    Chat.socket.send("**##CRMCG"+result + "~" + $('#chat-body').data('uid'));
+                    $(".tip").text(result);
+                })          
             }else if( message.data.indexOf("*UJOIN") >= 0 ){
                 jsonStr = message.data.substring(7,message.data.length);
                 rfc = eval("("+jsonStr+")");
+                var username = rfc[0].name;
                 userlist =userlist.concat(rfc);
 
                 $('.user-list').html('');
                 for(var i=0;i<userlist.length;i++){
                     Console.list(userlist[i].name,userlist[i].info);
-                }                 
+                }
+                if($('#chat-body').data('uid')!=username){
+                    Console.log(username, 'info_user_join');
+                }
             }else if( message.data.indexOf("*URMVD") >= 0 ){
                 var username = message.data.substring(7,message.data.length);
-                Console.log(username, 'info');
+                Console.log(username, 'info_user_exit');
             /* for(var k=0;k<userlist.length;k++){
                     if(userlist[k].name.trim() == username.trim()){
                         alert(k);
@@ -119,6 +171,9 @@ $(function(){
             }   */                          
             }else{
                 var data = eval("("+message.data+")");
+                $("li").removeClass("hover");
+                $("#大厅").find("span").text("2");
+                $("#餐饮&酒吧").find(".arrowSign").addClass("hover");
                 //alert(data.userMessage);
                 if($('#chat-body').data('uid')==data.userMessage){
                     Console.log(data.message,'my');
@@ -143,7 +198,7 @@ $(function(){
     Chat.sendMessage = function() {
         var message = editor.getValue();
         if (message != '') {
-            Chat.socket.send(message);
+            Chat.socket.send("**##CCMSG"+ $('#chat-body').data('uid') + '~'+message);
         }
     };
 
@@ -157,8 +212,12 @@ $(function(){
             $('<li class="other-chat" style="break-word">'+htmlDecode(message)+'</li>').appendTo('#console');
             var chatter = document.getElementById('console');
             chatter.scrollTop = chatter.scrollHeight;
-        }else if(type=='info'){
-            $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong>'+message+ '</strong></span>&nbsp刚离开了房间</li>').appendTo('#console');
+        }else if(type=='info_user_exit'){
+            $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i>'+message+ '</i></strong></span>&nbsp刚离开了房间</li>').appendTo('#console');
+            var chatter = document.getElementById('console');
+            chatter.scrollTop = chatter.scrollHeight;
+        }else if(type=='info_user_join'){
+            $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i>'+message+ '</i></strong></span>&nbsp刚进入房间</li>').appendTo('#console');
             var chatter = document.getElementById('console');
             chatter.scrollTop = chatter.scrollHeight;
         }
