@@ -42,8 +42,8 @@ li.sys_info:before{
     border: none;
 }
 .chat-thread li.sys_info img{
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     float: left;
     margin-right: 2px;
 }
