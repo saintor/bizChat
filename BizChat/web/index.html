@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <title>BizFans: Business&Social</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+
+        <link rel="stylesheet" href="public/css/font-awesome.css" media="screen" type="text/css"/>
+        <link rel="stylesheet" href="public/css/style.css" media="screen" type="text/css"/>
+        <link rel="stylesheet" href="public/css/common.css" media="screen" type="text/css"/>
+        <link rel="stylesheet" type="text/css" href="public/css/simditor.css" />
+        <link rel="stylesheet" type="text/css" href="public/css/simditor-emoji.css" />
+
+        <script type="text/javascript" src="public/js/roomlist.js"></script>
+        <script type="text/javascript" src="public/js/jquery.min.js"></script>
+        <script type="text/javascript" src="public/js/SimpleTree.js"></script>
+        <script type="text/javascript" src="public/js/module.js"></script>
+        <script type="text/javascript" src="public/js/hotkeys.js"></script>
+        <script type="text/javascript" src="public/js/uploader.js"></script>
+        <script type="text/javascript" src="public/js/simditor.js"></script>
+        <script type="text/javascript" src="public/js/simditor-emoji.js"></script>
+        <script type="text/javascript" src="public/js/main.js"></script>        
+    </head>
+    <body id="chat-body" data-uid="" style="background-image: url('public/img/background2.jpg')" class="bg-center">
+        <!--<div class="noscript"><h2 style="color: #ff0000">您的浏览器并不支持websocket</h2></div>-->
+        <div class="chat-wrapper" id="chat-wrapper" data-from="Sonu Joshi" style="position:absolute;top:5%;left:30%">
+            <div class="title-bar">
+                <span class="active-state">百事发实时商讯</span>
+                <div class="title-handle">
+                    <i class="fa fa-minus"></i>
+                    <i class="fa fa-plus"></i>
+                    <i class="fa fa-remove"></i>
+                </div>
+            </div>
+            <div class="right-content">
+                <div style="" class="chat-middle">
+                    <ul id="console" class="chat-thread">
+                        <!--<li class="sys_info gray"><img src="public/img/info.png"><span class="user">guest11 </span>刚离开了大厅去了<span class="house">房产/出租/静安</span> 房间</li>-->                     
+                    </ul>
+                    <div class="clear-both"></div>
+                </div>
+                <div class="chat-msg" style="">
+                    <textarea placeholder="请输入..." id="chat" class="text-post" autofocus=""></textarea>
+                    <div class="bottom-send">
+                        <span class="ss_text"></span>
+                        <span class="sub_btn">发送<i id="cert"></i> </span>
+                        <ul>
+                            <li>按Enter键发送信息</li>
+                            <li>按Enter键换行</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="left-content">
+                <div class="right-side">
+                    <ul class="right-side-tab">
+                        <li class="tab active"><i class="fa fa-user"></i></li>
+                        <li class="tab"><i class="fa fa-home"></i></li>
+                        <li class="tab" style="border-right:0px;"><i class="fa fa-gear"></i></li>
+                        <div class="clear-both"></div>
+                    </ul>
+                    <ul class="right-side-bottom user-list" style="display: block">
+                    </ul>
+                    <ul class="right-side-bottom">
+                        <div class="st_tree" style="margin:0 auto;">
+                        </div>
+                    </ul>
+                    <ul class="right-side-bottom" >
+                        <div class="st_tree" style="margin:0 auto;">
+                        </div>
+                    </ul>
+                </div>
+                <div class="clear-both"></div>
+            </div>
+            <div class="resize" id="resize">
+            </div>
+        </div>
+        <div class="chat-open">
+            <i class="fa fa-weixin"></i>
+        </div>
+    </body>
+</html>
