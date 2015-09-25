@@ -65,7 +65,7 @@ ul li{
 
 .chat-wrapper{
     min-height: 590px;
-    min-width:720px;
+    min-width:750px;
     width:50%;
     display:inline-block;
     background-color:#fff;
@@ -617,6 +617,12 @@ i{
 .st_tree .open{
     background:url(../img/st_icon_open.png) no-repeat;
     background-position: 8px 10px;
+}
+.usersOut,.usersIn{
+    display: none;
+}
+.usersOut.hover,.usersIn.hover{
+    display: inline-block !important;
 }
 
 
