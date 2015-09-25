@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>登录</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body{
+                background: url(public/img/background2.jpg) no-repeat;
+                background-size: cover;
+            }
+            .frm{
+            	width: 30%;
+            	height: 200px;
+            	margin: 20% auto;
+            	background: rgba(255,255,255,.6);
+            	padding: 20px;
+            }
+            .frm p{
+            	width: 100%;
+            	margin-top: 20px;
+            }
+            .frm p label{
+            	display: inline-block;
+            	height: 40px;
+            	line-height: 40px;
+            	width: 20%;
+            }
+            .frm p input{
+            	-webkit-appearance:none;
+            	border: 1px solid #ccc;
+            	box-sizing:border-box;
+            	font-size: 14px;
+            	height: 40px;
+            	width: 70%;
+            	outline: none;
+            }
+            .btn{
+            	text-align: center;
+            }
+            .frm p input[type="submit"]{
+            	width: 100px;
+            	
+            }
+        </style>
+    </head>
+    <body>
+        <div class="frm">
+            <form action="index.html" method="post" onsubmit="return login();">
+                <p>
+                    <label for="username">用户名：</label>
+                    <input type="text" name="username" value="" id="username">
+                </p>
+                <p>
+                    <label for="password">密码：</label>
+                    <input type="password" name="password" value="" id="password">
+                </p>
+                <p class="btn">
+                	<input type="submit" value="登陆">
+                </p>
+            </form>
+        </div>
+    </body>
+    <script src="public/js/main.js"></script>
+</html>
