@@ -7,8 +7,7 @@ and open the template in the editor.
 <html>
     <head>
         <title>登录</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <style>
             body{
                 background: url(public/img/background2.jpg) no-repeat;
@@ -43,15 +42,16 @@ and open the template in the editor.
             .btn{
             	text-align: center;
             }
-            .frm p input[type="submit"]{
+            .frm p input[type="button"]{
             	width: 100px;
             	
             }
         </style>
+        <script type="text/javascript" src="public/js/main.js"></script>
     </head>
     <body>
         <div class="frm">
-            <form action="index.html" method="post" onsubmit="return login();">
+            <!--<form action="index.html" method="post" onsubmit="return login();">-->
                 <p>
                     <label for="username">用户名：</label>
                     <input type="text" name="username" value="" id="username">
@@ -61,10 +61,9 @@ and open the template in the editor.
                     <input type="password" name="password" value="" id="password">
                 </p>
                 <p class="btn">
-                	<input type="submit" value="登陆">
+                	<input type="button" value="登陆" onclick="login()">
                 </p>
-            </form>
+            <!--</form>-->
         </div>
     </body>
-    <script src="public/js/main.js"></script>
 </html>
