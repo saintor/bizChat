@@ -74,7 +74,7 @@ $(function () {
         }
         //客户端
         Chat.socket.onopen = function (message) {
-            Console.tip('连通状态');
+            //Console.tip('连接中...');
         };
         //客户端
         Chat.socket.onclose = function (message) {
@@ -89,6 +89,7 @@ $(function () {
         //服务器端
         Chat.socket.onmessage = function (message) {
             if (message.data.indexOf("*ULGNN") >= 0) {
+                Console.tip('连通状态');
                 clientname = message.data.substring(7, message.data.length).trim();
                 roomname = "大厅";
                 $('#chat-body').data('uid', clientname);
@@ -106,12 +107,13 @@ $(function () {
                 var jsonStr = message.data.substring(7, message.data.length);
                 var rfc = eval("(" + jsonStr + ")");
                 userlist = rfc;
+                roomname = rfc[0].roomname;
                 //var rfc = eval("("+message.data+")");
 
                 //userlist.push(rfc);
                 $('.user-list').html('');
                 for (var i = 0; i < rfc.length; i++) {
-                    Console.list(rfc[i].name, rfc[i].info);
+                    Console.list(rfc[i].username, rfc[i].info);
                 }
             } else if (message.data.indexOf("*UROOMS") >= 0) {
                 $("#728894").find(".arrowSign").addClass("hover");
@@ -138,33 +140,49 @@ $(function () {
                     if (roomname === result) {
                         Console.log("你目前已在 <i>" + result + "</i> 房间", 'general');
                     } else {
-                        Chat.socket.send("**##CRMCG" + roomname + "~" + result + "~" + $('#chat-body').data('uid'));
-                        $(".tip").text(result);
+                        Chat.socket.send("**##CRMCG" + roomname + "~" + result + "~" + clientname);
+                        $(".tip").text("-->" + result);
                     }
                 });
+            } else if (message.data.indexOf("*URMVD") >= 0) {
+                var user = message.data.substring(7, message.data.length);
+                Console.log(user, 'info_user_exit');
             } else if (message.data.indexOf("*UJOIN") >= 0) {
                 jsonStr = message.data.substring(7, message.data.length);
                 rfc = eval("(" + jsonStr + ")");
-                var username = rfc[0].name;
+                var username = rfc[0].username;
                 userlist = userlist.concat(rfc);
 
                 $('.user-list').html('');
                 for (var i = 0; i < userlist.length; i++) {
-                    Console.list(userlist[i].name, userlist[i].info);
+                    Console.list(userlist[i].username, userlist[i].info);
                 }
-                if ($('#chat-body').data('uid') !== username) {
+                if (clientname !== username) {
                     Console.log(username, 'info_user_join');
                 }
             } else if (message.data.indexOf("*UCGRM") >= 0) {
                 jsonStr = message.data.substring(7, message.data.length);
                 rfc = eval("(" + jsonStr + ")");
-                if ($('#chat-body').data('uid') === rfc.userName) {
+
+                if (clientname === rfc.userName) {
                     roomname = rfc.newRoom;
                     $("#" + rfc.oldID).find(".arrowSign").removeClass("hover");
                     $("#" + rfc.newID).find(".arrowSign").addClass("hover");
-                } else {
+                } else if (roomname === rfc.oldRoom) {
+                    for (var k = 0; k < userlist.length; k++) {
+                        if (userlist[k].username === clientname) {
+                            alert(k);
+                            userlist.splice(k, 1);
+                            break;
+                        }
+                    }
+                    $('.user-list').html('');
+                    for (var i = 0; i < userlist.length; i++) {
+                        Console.list(userlist[i].username, userlist[i].info);
+                    }
                     Console.log(rfc.userName + ',' + rfc.newRoom, 'info_user_room_change');
                 }
+
                 $("#" + rfc.oldID).find("span").text(rfc.oldCount);
                 $("#" + rfc.newID).find("span").text(rfc.newCount);
                 if (rfc.newID > 0) {
@@ -176,33 +194,24 @@ $(function () {
                     $("#" + rfc.oldID).find("img.usersOut").addClass("hover").siblings("img.usersIn").removeClass("hover");
                     $("#" + rfc.oldID).find("span").text("--");
                 }
-                /* for(var k=0;k<userlist.length;k++){
-                 if(userlist[k].name.trim() == username.trim()){
-                 alert(k);
-                 break;
-                 }
-                 } 
-                 //Console.tip(userlist[k].name+'刚离开房间');                    
-                 userlist = userlist.splice(k);  
-                 //$('.user-list').html('');
-                 for(var i=0;i<userlist.length;i++){
-                 Console.list(userlist[i].name,userlist[i].info);
-                 }   */
             } else if (message.data.indexOf("*URMMT") >= 0) {
                 var roomMeta = message.data.substr(7);
-                $(".st_tree").SimpleTree({
-                    /* 可无视代码部分*/
-                    click: function (a) {
-                        if (!$(a).attr("hasChild"))
-                            alert($(a).attr("ref"));
-                    }
-                });
                 $(".st_tree").html(roomMeta);
-                //$(roomlist).appendTo('.st_tree');
+                $(".st_tree").SimpleTree({
+                });
+                /*$(".st_tree").SimpleTree({
+                 /* 可无视代码部分
+                 click: function (a) {
+                 if (!$(a).attr("hasChild"))
+                 alert($(a).attr("ref"));
+                 }
+                 });
+                 $(".st_tree").html(roomMeta);
+                 //$(roomlist).appendTo('.st_tree');*/
             }
             else {
                 var data = eval("(" + message.data + ")");
-                $("#十三张").find(".arrowSign").addClass("hover");
+                //$("#十三张").find(".arrowSign").addClass("hover");
                 //alert(data.userMessage);
                 if ($('#chat-body').data('uid') === data.chatMessage) {
                     Console.log(data.message, 'my');
@@ -233,29 +242,29 @@ $(function () {
 
     var Console = {};
     Console.log = function (message, type) {
-        if (type == 'my') {
+        if (type === 'my') {
             $('<li class="my-chat" style="break-word">' + htmlDecode(message) + '</li>').appendTo('#console');
             var chatter = document.getElementById('console');
             chatter.scrollTop = chatter.scrollHeight;
-        } else if (type == 'other') {
+        } else if (type === 'other') {
             $('<li class="other-chat" style="break-word">' + htmlDecode(message) + '</li>').appendTo('#console');
             var chatter = document.getElementById('console');
             chatter.scrollTop = chatter.scrollHeight;
-        } else if (type == 'info_user_room_change') {
+        } else if (type === 'info_user_room_change') {
             var messages = message.split(',');
             $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i>' + messages[0] + '</i></strong></span>&nbsp刚离开去了<i><strong>' + messages[1]
                     + '</strong></i> 房间</li>').appendTo('#console');
             var chatter = document.getElementById('console');
             chatter.scrollTop = chatter.scrollHeight;
-        } else if (type == 'info_user_exit') {
+        } else if (type === 'info_user_exit') {
             $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i>' + message + '</i></strong></span>&nbsp刚登出系统.</li>').appendTo('#console');
             var chatter = document.getElementById('console');
             chatter.scrollTop = chatter.scrollHeight;
-        } else if (type == 'info_user_join') {
-            $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i>' + message + '</i></strong></span>&nbsp刚进入房间</li>').appendTo('#console');
+        } else if (type === 'info_user_join') {
+            $('<li class="sys_info oliver"><img src="public/img/info.png"><span class="user"><strong><i>' + message + '</i></strong></span>&nbsp刚进入房间</li>').appendTo('#console');
             var chatter = document.getElementById('console');
             chatter.scrollTop = chatter.scrollHeight;
-        } else if (type == 'general') {
+        } else if (type === 'general') {
             $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user">' + message + '</span></li>').appendTo('#console');
             var chatter = document.getElementById('console');
             chatter.scrollTop = chatter.scrollHeight;
