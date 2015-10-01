@@ -146,6 +146,16 @@ $(function () {
                 });
             } else if (message.data.indexOf("*URMVD") >= 0) {
                 var user = message.data.substring(7, message.data.length);
+                for (var i = 0; i < userlist.length; i++) {
+                    if (userlist[i].username === user.trim()) {
+                        userlist.splice(i, 1);
+                        break;
+                    }
+                }
+                $('.user-list').html('');
+                for (var i = 0; i < userlist.length; i++) {
+                    Console.list(userlist[i].username, userlist[i].info);
+                }
                 Console.log(user, 'info_user_exit');
             } else if (message.data.indexOf("*UJOIN") >= 0) {
                 jsonStr = message.data.substring(7, message.data.length);
@@ -170,8 +180,7 @@ $(function () {
                     $("#" + rfc.newID).find(".arrowSign").addClass("hover");
                 } else if (roomname === rfc.oldRoom) {
                     for (var k = 0; k < userlist.length; k++) {
-                        if (userlist[k].username === clientname) {
-                            alert(k);
+                        if (userlist[k].username === rfc.userName) {
                             userlist.splice(k, 1);
                             break;
                         }
@@ -208,6 +217,12 @@ $(function () {
                  });
                  $(".st_tree").html(roomMeta);
                  //$(roomlist).appendTo('.st_tree');*/
+            }
+            else if (message.data.indexOf("*UNEWS") >= 0) {
+                var newsMeta = message.data.substr(7);
+                /*$(".st_tree").html(newsMeta);
+                 $(".st_tree").SimpleTree({
+                 });*/
             }
             else {
                 var data = eval("(" + message.data + ")");
