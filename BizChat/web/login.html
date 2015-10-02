@@ -14,15 +14,15 @@ and open the template in the editor.
                 background-size: cover;
             }
             .frm{
-            	width: 30%;
-            	height: 200px;
-            	margin: 20% auto;
+            	width: 330px;
+            	height: 220px;
+            	margin: 16% auto;
             	background: rgba(255,255,255,.6);
-            	padding: 20px;
+            	padding: 15px;
             }
             .frm p{
             	width: 100%;
-            	margin-top: 20px;
+                margin:5px;
             }
             .frm p label{
             	display: inline-block;
@@ -30,13 +30,13 @@ and open the template in the editor.
             	line-height: 40px;
             	width: 20%;
             }
-            .frm p input{
+            .frm p input[type="text"],.frm p input[type="password"]{
             	-webkit-appearance:none;
             	border: 1px solid #ccc;
             	box-sizing:border-box;
             	font-size: 14px;
-            	height: 40px;
-            	width: 70%;
+            	height: 30px;
+            	width: 52%;
             	outline: none;
             }
             .btn{
@@ -46,8 +46,94 @@ and open the template in the editor.
             	width: 100px;
             	
             }
+            #code{
+                width:120px;
+            }
+            .gender{
+                position: relative
+            }
+            .gender .img_box{
+                position: absolute;
+                display: none;
+                width:200px;
+                height:30px;
+                padding:10px;
+            }
+            .img_box img{
+                width:32px;
+                height:32px;
+            }
+            .gender .img_box.hover{
+                position: absolute;
+                top: -62px;
+                left: 74px;
+                display: inline-block;
+                width:200px;
+                height:35px;
+                background: rgba(255,255,255,1);
+            }
+            .img_box:before{
+                position: absolute;
+                content:'';
+                width:10px;
+                height:10px;
+                -webkit-transform: rotate(45deg);
+                -moz-transform: rotate(45deg);
+                -o-transform:rotate(45deg);
+                -ms-transform: rotate(45deg);
+                transform: rotate(45deg);
+                top: 50px;
+                left:7px;
+                background: rgba(255,255,255,1);
+            }
+            .gender img{
+                vertical-align: -16%;
+            }
         </style>
-        <script type="text/javascript" src="public/js/main.js"></script>
+        
+        <script src="public/js/jquery.min.js"></script>
+        <script>
+            $(function(){
+                //加载当前显示的人物头像
+                function loadImg(src){
+                    $("#currentImg").attr("src",src);
+                }
+            
+                $(".img_box img").on("click",function(){
+                    loadImg($(this).attr("src"));
+                    closeImgBox();
+                })
+            })
+            function initImg(src){
+                $("#currentImg").attr("src",src);
+            }
+            function closeImgBox(obj){
+                $(".img_box").removeClass("hover");
+                if(obj.id=="male"){
+                    initImg("public/img/avatar.png");
+                }else if(obj.id=="female"){
+                    initImg("public/img/female.jpg");
+                }else{
+                    initImg("")
+                }
+            }
+            function login(){
+                Chat.connect($("#username").val(),$("#password").val());
+            }
+            
+            //切换头像
+            function changeHeaderImg(){
+                $(".img_box[data-toggle='"+$("input[name='sex']:checked")[0].id+"']").toggleClass("hover");
+            }    
+            function login(){
+                Chat.connect($("#username").val(),$("#password").val());
+            }
+            
+            //切换头像
+            function changeHeaderImg(){
+                $(".img_box[data-toggle='"+$("input[name='sex']:checked")[0].id+"']").toggleClass("hover");
+            }
+        </script>
     </head>
     <body>
         <div class="frm">
@@ -55,13 +141,43 @@ and open the template in the editor.
                 <p>
                     <label for="username">用户名：</label>
                     <input type="text" name="username" value="" id="username">
+                    <input type="checkbox">会员
                 </p>
                 <p>
                     <label for="password">密码：</label>
                     <input type="password" name="password" value="" id="password">
                 </p>
+                <p>
+                    <label for="code">验证码：</label>
+                    <input type="text" name="code" value="" id="code">
+                    <img src="public/img/hot.png">
+                </p>
+                <p class="gender">
+                    <label for="sex">性别：</label>
+                    <span class="img_box" data-toggle="male">
+                        <img src="public/img/avarta/male1.png"/>
+                        <img src="public/img/avarta/male2.png"/>
+                        <img src="public/img/avarta/male3.png"/>
+                        <img src="public/img/avarta/male4.png"/>
+                        <img src="public/img/avarta/male5.png"/>
+                    </span>
+                    <span class="img_box" data-toggle="female">  
+                        <img src="public/img/avarta/female1.png"/>
+                        <img src="public/img/avarta/female2.png"/>
+                        <img src="public/img/avarta/female3.png"/>
+                        <img src="public/img/avarta/female4.png"/>
+                        <img src="public/img/avarta/female5.png"/>
+                    </span>
+                    <span class="img_box" data-toggle="x">  
+                        
+                    </span>
+                    <img src="public/img/avatar.png" width="25px" height="25px" onclick="changeHeaderImg()" id="currentImg"/>
+                    <input type="radio" name="sex" value="" checked="checked" id="male" onclick="closeImgBox(this)">男
+                    <input type="radio" name="sex" value="" id="female" onclick="closeImgBox(this)">女 
+                    <input type="radio" name="sex" value="" id="x" onclick="closeImgBox(this)">未知
+                </p>
                 <p class="btn">
-                	<input type="button" value="登陆" onclick="login()">
+                    <input type="button" value="登录" onclick="login()">
                 </p>
             <!--</form>-->
         </div>
