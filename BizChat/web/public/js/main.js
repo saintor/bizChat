@@ -75,6 +75,7 @@ $(function () {
         //客户端
         Chat.socket.onopen = function (message) {
             //Console.tip('连接中...');
+            Chat.socket.send("**##CLGIN");// + username + '~' + password + '~' + avarta);
         };
         //客户端
         Chat.socket.onclose = function (message) {
@@ -86,27 +87,33 @@ $(function () {
         var roomlist = [];
         var clientname;
         var roomname;
+        var loginStatus; //前端登录需要查收这个return值
         //服务器端
         Chat.socket.onmessage = function (message) {
             if (message.data.indexOf("*ULGNN") >= 0) {
-                Console.tip('连通状态');
-                clientname = message.data.substring(7, message.data.length).trim();
-                roomname = "大厅";
-                $('#chat-body').data('uid', clientname);
-                $('.simditor-body').keydown(function () {
-                    if (event.keyCode === 13) {
+                loginStatus = message.data.substring(7, message.data.length).trim();
+                if (loginStatus === "true") {
+                    Console.tip('连通状态');
+                    roomname = "大厅";
+                    $('.simditor-body').keydown(function () {
+                        if (event.keyCode === 13) {
+                            Chat.sendMessage(clientname, roomname);
+                            editor.setValue('');
+                        }
+                    });
+                    $(".sub_btn").on("click", function () {
                         Chat.sendMessage(clientname, roomname);
                         editor.setValue('');
-                    }
-                });
-                $(".sub_btn").on("click", function () {
-                    Chat.sendMessage(clientname, roomname);
-                    editor.setValue('');
-                })
+                    });
+                } else {
+                    loginStatus = "false";
+                }
+
             } else if (message.data.indexOf("*ULIST") >= 0) {
                 var jsonStr = message.data.substring(7, message.data.length);
                 var rfc = eval("(" + jsonStr + ")");
                 userlist = rfc;
+                clientname = rfc[0].username;
                 roomname = rfc[0].roomname;
                 //var rfc = eval("("+message.data+")");
 
@@ -145,31 +152,38 @@ $(function () {
                     }
                 });
             } else if (message.data.indexOf("*URMVD") >= 0) {
-                var user = message.data.substring(7, message.data.length);
-                for (var i = 0; i < userlist.length; i++) {
-                    if (userlist[i].username === user.trim()) {
-                        userlist.splice(i, 1);
-                        break;
+                jsonStr = message.data.substring(7, message.data.length);
+                rfc = eval("(" + jsonStr + ")");
+                if (roomname === rfc.roomname) {
+                    var user = rfc.username;
+                    for (var i = 0; i < userlist.length; i++) {
+                        if (userlist[i].username === user.trim()) {
+                            userlist.splice(i, 1);
+                            break;
+                        }
                     }
+                    $('.user-list').html('');
+                    for (var i = 0; i < userlist.length; i++) {
+                        Console.list(userlist[i].username, userlist[i].info);
+                    }
+                    Console.log(user, 'info_user_exit');
                 }
-                $('.user-list').html('');
-                for (var i = 0; i < userlist.length; i++) {
-                    Console.list(userlist[i].username, userlist[i].info);
-                }
-                Console.log(user, 'info_user_exit');
+                var newCount = parseInt($("#" + rfc.roomID).find("span").text()) - 1;
+                $("#" + rfc.roomID).find("span").text(newCount);
             } else if (message.data.indexOf("*UJOIN") >= 0) {
                 jsonStr = message.data.substring(7, message.data.length);
                 rfc = eval("(" + jsonStr + ")");
-                var username = rfc[0].username;
-                userlist = userlist.concat(rfc);
 
-                $('.user-list').html('');
-                for (var i = 0; i < userlist.length; i++) {
-                    Console.list(userlist[i].username, userlist[i].info);
-                }
-                if (clientname !== username) {
+                if (roomname === rfc[0].roomname) {
+                    var username = rfc[0].username;
+                    userlist = userlist.concat(rfc);
+                    $('.user-list').html('');
+                    for (var i = 0; i < userlist.length; i++) {
+                        Console.list(userlist[i].username, userlist[i].info);
+                    }
                     Console.log(username, 'info_user_join');
                 }
+                $("#" + rfc[0].roomID).find("span").text(userlist.length);
             } else if (message.data.indexOf("*UCGRM") >= 0) {
                 jsonStr = message.data.substring(7, message.data.length);
                 rfc = eval("(" + jsonStr + ")");
@@ -194,11 +208,11 @@ $(function () {
 
                 $("#" + rfc.oldID).find("span").text(rfc.oldCount);
                 $("#" + rfc.newID).find("span").text(rfc.newCount);
-                if (rfc.newID > 0) {
+                if (rfc.newCount > 0) {
                     //$("#"+rfc.newID).find("img").attr("src", "public/img/usersIn.png");
                     $("#" + rfc.newID).find("img.usersIn").addClass("hover").siblings("img.usersOut").removeClass("hover");//.attr("src", "public/img/usersIn.png");
                 }
-                if (rfc.oldID < 1) {
+                if (rfc.oldCount < 1) {
                     //$("#"+rfc.oldID).find("img").attr("src", "public/img/usersOut.png");
                     $("#" + rfc.oldID).find("img.usersOut").addClass("hover").siblings("img.usersIn").removeClass("hover");
                     $("#" + rfc.oldID).find("span").text("--");
@@ -228,7 +242,7 @@ $(function () {
                 var data = eval("(" + message.data + ")");
                 //$("#十三张").find(".arrowSign").addClass("hover");
                 //alert(data.userMessage);
-                if ($('#chat-body').data('uid') === data.chatMessage) {
+                if (clientname === data.chatMessage) {
                     Console.log(data.message, 'my');
                 } else {
                     Console.log(data.message, 'other');
