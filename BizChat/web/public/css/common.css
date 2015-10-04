@@ -23,6 +23,10 @@ li.hot:before{
 .gray{
     color: #949191;
 }
+/*红色背景*/
+.bg_red{
+    background: red !important;
+}
 
 /*提示信息*/
 .chat-thread li.sys_info{
@@ -53,27 +57,45 @@ li.sys_info:before{
 /***************动画函数*************/
 /*闪动*/
 @-webkit-keyframes autoMove {
-    0%{top: 2px}
-50%{top: 0}
-100%{top: -2px}
+    0%{margin-top: 2px}
+50%{margin-top: 0}
+100%{margin-top: -2px}
 }
 @keyframes autoMove {
-    0%{top: 2px}
-50%{top: 0}
-100%{top: -2px}
+    0%{margin-top: 2px}
+50%{margin-top: 0}
+100%{margin-top: -2px}
 }
 @-o-keyframes autoMove {
-    0%{top: 2px}
-50%{top: 0}
-100%{top: -2px}
+    0%{margin-top: 2px}
+50%{margin-top: 0}
+100%{margin-top: -2px}
 }
 @-moz-keyframes autoMove {
-    0%{top: 2px}
-50%{top: 0}
-100%{top: -2px}
+    0%{margin-top: 2px}
+50%{margin-top: 0}
+100%{margin-top: -2px}
 }
 @-ms-keyframes autoMove {
-    0%{top: 2px}
-50%{top: 0}
-100%{top: -2px}
+    0%{margin-top: 2px}
+50%{margin-top: 0}
+100%{margin-top: -2px}
 }
+
+    /*改变placeholder文本的颜色*/
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+        color:#fff;
+        font-weight: bold;
+    }
+    input:-moz-placeholder, textarea:-moz-placeholder { 
+        color:#fff;
+        font-weight: bold;
+    }
+    input::-moz-placeholder, textarea::-moz-placeholder { 
+        color:#fff;
+        font-weight: bold;
+    }
+    input:-ms-input-placeholder, textarea:-ms-input-placeholder { 
+        color:#fff;
+        font-weight: bold;
+    }
