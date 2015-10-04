@@ -8,6 +8,7 @@ and open the template in the editor.
     <head>
         <title>登录</title>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="public/css/common.css" media="screen" type="text/css"/>
         <style>
             body{
                 background: url(public/img/background2.jpg) no-repeat;
@@ -15,29 +16,61 @@ and open the template in the editor.
             }
             .frm{
             	width: 330px;
-            	height: 220px;
             	margin: 16% auto;
-            	background: rgba(255,255,255,.6);
-            	padding: 15px;
+            	/*background: #fff;*/
+                background: url(public/img/bg_login.png) no-repeat;
+                background-size: 100% 100%;
+            	/*padding: 15px;*/
+                padding:60px;
+                border-radius: 10px;
             }
             .frm p{
             	width: 100%;
                 margin:5px;
+            }
+            .right-50{
+                margin-left:25%;
+            }
+            .btn_container{
+                text-align: center;
+                position: relative;
+            }
+            .btn{
+                display: inline-block;
+                width:25%;
+                height: 30px;
+                /*background: #052781;*/
+                line-height: 30px;
+                border-radius: 5px;
+                color:#fff;
+                letter-spacing: 20px;
+                /*padding-left: 20px;*/
+                cursor: pointer;
+            }
+            .btn.login{
+                background:url(public/img/btn_login.jpg) no-repeat;
+                background-size: 84px 34px;
             }
             .frm p label{
             	display: inline-block;
             	height: 40px;
             	line-height: 40px;
             	width: 20%;
+                color:#003779;
+                font-weight: bold;
             }
             .frm p input[type="text"],.frm p input[type="password"]{
             	-webkit-appearance:none;
-            	border: 1px solid #ccc;
+            	border: 1px solid #fff;
             	box-sizing:border-box;
             	font-size: 14px;
             	height: 30px;
             	width: 52%;
             	outline: none;
+                padding-left: 5px;
+                background: rgba(72,165,208,.5);
+                border-radius: 5px;
+                box-shadow: 0 0 10px #fff;
             }
             .btn{
             	text-align: center;
@@ -50,7 +83,40 @@ and open the template in the editor.
                 width:120px;
             }
             .gender{
-                position: relative
+                position: relative;
+                text-align: center;
+            }
+            .gender .down_img{
+                display: block;
+                position: absolute;
+                /*content: '';*/
+                width:50px;
+                height:50px;
+                background: url(public/img/down.png) no-repeat;
+                background-size: 100% 100%;
+                left: 4px;
+                top: -130px;
+                -webkit-animation: autoMove .5s linear alternate infinite;
+                -moz-animation: autoMove .5s linear alternate infinite;
+                -ms-animation: autoMove .5s linear alternate infinite;
+                -o-animation: autoMove .5s linear alternate infinite;
+                animation: autoMove .5s linear alternate infinite;
+                display: none;
+            }
+            .gender .down_text{
+                display: block;
+                position: absolute;
+                /*content: '';*/
+                left: -16px;
+                top: -145px;
+                color:cyan;
+                font-weight: bold;
+                -webkit-animation: autoMove .5s linear alternate infinite;
+                -moz-animation: autoMove .5s linear alternate infinite;
+                -ms-animation: autoMove .5s linear alternate infinite;
+                -o-animation: autoMove .5s linear alternate infinite;
+                animation: autoMove .5s linear alternate infinite;
+                display: none;
             }
             .gender .img_box{
                 position: absolute;
@@ -70,7 +136,8 @@ and open the template in the editor.
                 display: inline-block;
                 width:200px;
                 height:35px;
-                background: rgba(255,255,255,1);
+                background: #fff;
+                border: 1px solid #ccc;
             }
             .img_box:before{
                 position: absolute;
@@ -84,10 +151,52 @@ and open the template in the editor.
                 transform: rotate(45deg);
                 top: 50px;
                 left:7px;
-                background: rgba(255,255,255,1);
+                background: #fff;
+                border-right: 1px solid #ccc;
+                border-bottom:1px solid #ccc;
             }
-            .gender img{
-                vertical-align: -16%;
+            .gender>img{
+                position: absolute;
+                top:-80px;
+                left:10px;
+                border:2px solid rgba(255,255,255,0);
+            }
+            .gender>img:hover{
+                border:2px solid #fff;
+                box-shadow: 0 0 5px #fff;
+            }
+            .gender>.gender_radio{
+                position: absolute;
+                left: -16px;
+                top: -30px;
+            }
+            .gender_radio>input{
+                margin:-5px;
+                width: 25px;
+                height:25px;
+                opacity: 0;
+            }
+            .gender_radio>img{
+                border:2px solid rgba(255,255,255,0);
+            }
+            .gender_radio>input:hover+img{
+                border:2px solid #fff;
+                box-shadow: 0 0 5px #fff;
+            }
+            .gender_radio>input:nth-of-type(1){
+                position: absolute;
+                top:3px;
+                left:3px;
+            }
+            .gender_radio>input:nth-of-type(2){
+                position: absolute;
+                top:3px;
+                left:31px;
+            }
+            .gender_radio>input:nth-of-type(3){
+                position: absolute;
+                top:3px;
+                left:59px;
             }
         </style>
         
@@ -102,25 +211,26 @@ and open the template in the editor.
                 $(".img_box img").on("click",function(){
                     loadImg($(this).attr("src"));
                     closeImgBox();
+                    $(".gender .down_img,.gender .down_text").hide();
                 })
-            })
+                $("input[type='checkbox']").on("click",function(){
+                    $(".password").toggle();
+                });
+            });
             function initImg(src){
                 $("#currentImg").attr("src",src);
             }
             function closeImgBox(obj){
                 $(".img_box").removeClass("hover");
-                if(obj.id=="male"){
+                $(".gender .down_img,.gender .down_text").show();
+                if(obj.id==="male"){
                     initImg("public/img/avatar.png");
-                }else if(obj.id=="female"){
+                }else if(obj.id==="female"){
                     initImg("public/img/female.jpg");
                 }else{
-                    initImg("")
+                    initImg("");
                 }
-            }
-            function login(){
-                Chat.connect($("#username").val(),$("#password").val());
-            }
-            
+            }        
             //切换头像
             function changeHeaderImg(){
                 $(".img_box[data-toggle='"+$("input[name='sex']:checked")[0].id+"']").toggleClass("hover");
@@ -128,32 +238,32 @@ and open the template in the editor.
             function login(){
                 Chat.connect($("#username").val(),$("#password").val());
             }
-            
-            //切换头像
-            function changeHeaderImg(){
-                $(".img_box[data-toggle='"+$("input[name='sex']:checked")[0].id+"']").toggleClass("hover");
-            }
         </script>
     </head>
     <body>
         <div class="frm">
             <!--<form action="index.html" method="post" onsubmit="return login();">-->
-                <p>
-                    <label for="username">用户名：</label>
-                    <input type="text" name="username" value="" id="username">
-                    <input type="checkbox">会员
+                <p style="text-align:right;">
+                    <input type="checkbox" checked="checked"><label style="width:10%">会员</label>
+                </p>
+                <p style="margin-top:40px;">
+                    <label for="username" class="right-50">用户名：</label>
+                    <input type="text" name="username" value="" id="username" placeholder="">
+                </p>
+                <p class="password">
+                    <label for="password" class="right-50">密&nbsp;码：</label>
+                    <input type="password" name="password" value="" id="password" placeholder="">
                 </p>
                 <p>
-                    <label for="password">密码：</label>
-                    <input type="password" name="password" value="" id="password">
-                </p>
-                <p>
-                    <label for="code">验证码：</label>
-                    <input type="text" name="code" value="" id="code">
+                    <label for="code" class="right-50">验证码：</label>
+                    <input type="text" name="code" value="" id="code" placeholder="">
                     <img src="public/img/hot.png">
                 </p>
                 <p class="gender">
-                    <label for="sex">性别：</label>
+                    <span class="down_img"></span>
+                    <span class="down_text">点击选择头像</span>
+                    <img src="public/img/avatar.png" width="35px" height="35px" onclick="changeHeaderImg()" id="currentImg"/>
+                    <!--<label for="sex" style="margin-left:15%">性&nbsp;别：</label>-->
                     <span class="img_box" data-toggle="male">
                         <img src="public/img/avarta/male1.png"/>
                         <img src="public/img/avarta/male2.png"/>
@@ -171,13 +281,18 @@ and open the template in the editor.
                     <span class="img_box" data-toggle="x">  
                         
                     </span>
-                    <img src="public/img/avatar.png" width="25px" height="25px" onclick="changeHeaderImg()" id="currentImg"/>
-                    <input type="radio" name="sex" value="" checked="checked" id="male" onclick="closeImgBox(this)">男
-                    <input type="radio" name="sex" value="" id="female" onclick="closeImgBox(this)">女 
-                    <input type="radio" name="sex" value="" id="x" onclick="closeImgBox(this)">未知
+                    <span class="gender_radio">
+                        <input type="radio" name="sex" value="" checked="checked" id="male" onclick="closeImgBox(this)">
+                        <img src="public/img/avatar.png" width="20px" height="20px"/>
+                        <input type="radio" name="sex" value="" id="female" onclick="closeImgBox(this)">
+                        <img src="public/img/female.jpg" width="20px" height="20px"/>
+                        <input type="radio" name="sex" value="" id="x" onclick="closeImgBox(this)">
+                        <img src="public/img/avatar.png" width="20px" height="20px"/>
+                    </span>
                 </p>
-                <p class="btn">
-                    <input type="button" value="登录" onclick="login()">
+                <p class="btn_container">
+                    <span class="btn login" onclick="login()"></span>
+                    <!--<span class="btn bg_red">注册</span>-->
                 </p>
             <!--</form>-->
         </div>
