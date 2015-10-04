@@ -18,7 +18,7 @@ and open the template in the editor.
             	width: 330px;
             	margin: 16% auto;
             	/*background: #fff;*/
-                background: url(public/img/bg_login.png) no-repeat;
+                background: url(public/img/loginFrame.png) no-repeat;
                 background-size: 100% 100%;
             	/*padding: 15px;*/
                 padding:60px;
@@ -48,7 +48,7 @@ and open the template in the editor.
                 cursor: pointer;
             }
             .btn.login{
-                background:url(public/img/btn_login.jpg) no-repeat;
+                background:url(public/img/loginbutton.png) no-repeat;
                 background-size: 84px 34px;
             }
             .frm p label{
@@ -77,7 +77,7 @@ and open the template in the editor.
             }
             .frm p input[type="button"]{
             	width: 100px;
-            	
+
             }
             #code{
                 width:120px;
@@ -199,7 +199,7 @@ and open the template in the editor.
                 left:59px;
             }
         </style>
-        
+
         <script src="public/js/jquery.min.js"></script>
         <script>
             $(function(){
@@ -207,7 +207,7 @@ and open the template in the editor.
                 function loadImg(src){
                     $("#currentImg").attr("src",src);
                 }
-            
+
                 $(".img_box img").on("click",function(){
                     loadImg($(this).attr("src"));
                     closeImgBox();
@@ -230,11 +230,11 @@ and open the template in the editor.
                 }else{
                     initImg("");
                 }
-            }        
+            }
             //切换头像
             function changeHeaderImg(){
                 $(".img_box[data-toggle='"+$("input[name='sex']:checked")[0].id+"']").toggleClass("hover");
-            }    
+            }
             function login(){
                 Chat.connect($("#username").val(),$("#password").val());
             }
@@ -271,15 +271,15 @@ and open the template in the editor.
                         <img src="public/img/avarta/male4.png"/>
                         <img src="public/img/avarta/male5.png"/>
                     </span>
-                    <span class="img_box" data-toggle="female">  
+                    <span class="img_box" data-toggle="female">
                         <img src="public/img/avarta/female1.png"/>
                         <img src="public/img/avarta/female2.png"/>
                         <img src="public/img/avarta/female3.png"/>
                         <img src="public/img/avarta/female4.png"/>
                         <img src="public/img/avarta/female5.png"/>
                     </span>
-                    <span class="img_box" data-toggle="x">  
-                        
+                    <span class="img_box" data-toggle="x">
+
                     </span>
                     <span class="gender_radio">
                         <input type="radio" name="sex" value="" checked="checked" id="male" onclick="closeImgBox(this)">
