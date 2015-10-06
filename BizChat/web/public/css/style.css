@@ -1,4 +1,4 @@
-*{
+﻿*{
     -webkit-padding-start: 0px;
     -webkit-margin-before: 0px;
     -webkit-margin-after: 0px;
@@ -30,26 +30,13 @@ ul li{
     display:inline-block;
 }
 
-::-webkit-scrollbar {
-    width: 10px;
-}
 
-::-webkit-scrollbar-track {
-    border-radius: 10px;
-    background-color: rgba(25, 147, 147, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: rgba(25, 147, 147, 0.2);
-}
 .title-bar{
     text-align: left
 }
 .resize{
-    background-color:red;
-    width:10px ;
-    height:10px;
+    width:20px ;
+    height:20px;
     bottom:0px;
     right:0px;
     z-index: 10;
@@ -87,7 +74,7 @@ ul li{
     width:100%;
     display:inline-block;
     vertical-align:top;
-    height:320px;
+    height:80%;
     float:left;
 }
 .ha-min{
@@ -394,14 +381,14 @@ ul li{
     cursor: pointer;
     font-weight: normal;
 }
-.sub_btn #cert{
+.sub-wrapper #cert{
     position: absolute;
     content: '';
     width: 10px;
     height: 30px;
     border: 1px solid #c1c1c1;
-    right: -10px;
-    top: -1px;
+    right: 10px;
+    top: -2px;
     border-radius: 4px;
     background: #fff url("../img/cert.png") no-repeat;
     background-position: center 45%;
@@ -479,8 +466,9 @@ ul li{
     font-size:20px;
 }
 .right-side-bottom{
-    overflow: hidden;
-    height: 420px;
+    overflow-y: scroll;
+    height: 100%;
+    display: none;
 }
 .right-side-bottom li{
     padding:10px;
@@ -504,12 +492,6 @@ ul li{
     vertical-align: top;
     padding-left:10px;
     font-size:20px;
-}
-
-.right-side-bottom{
-    display:none;
-    overflow-y: auto;
-    height: 510px;
 }
 
 .chat-open{
@@ -546,6 +528,11 @@ ul li{
     text-align:center;
     color:#ccc;
     margin-bottom: 30px;
+
+    transition: all 2s;
+    -moz-transition: all 2s; /* Firefox 4 */
+    -webkit-transition: all 2s; /* Safari 和 Chrome */
+    -o-transition: all 2s; /* Opera */
 }
 i{
     cursor:pointer;
@@ -555,9 +542,9 @@ i{
     border-bottom: 0px;
     padding: 0 20px;
     font-size: 14px;
-    background:url(../img/sub_node.gif) no-repeat;
+    background:url(../img/leaf_node.png) no-repeat;
     background-position: 2% center;
-    background-size: 10px 5px;
+    background-size: 5px 5px;
     height: 25px;
     line-height: 25px;
 }
@@ -593,11 +580,20 @@ i{
     font-size:14px;
     color:#222;
     cursor:pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
     list-style:none;
-    background:url(../img/sub_node.gif) no-repeat;
-    background-size: 10px 5px;
+    background:url(../img/leaf_node.png) no-repeat;
+    background-size: 5px 5px;
     background-position:0 center;
     margin-left: 20px;
+}
+.other-tree .folder{
+    box-shadow: 1px 2px 2px #ccc;
+}
+.other-tree ul li{
+    border-bottom: 1px solid #ccc;
 }
 /* 子菜单 */
 .st_tree ul>ul>ul{
@@ -624,6 +620,162 @@ i{
 .usersOut.hover,.usersIn.hover{
     display: inline-block !important;
 }
+.wysiwyg-editor {
+    height:81%;
+}
 
+.ui-side{
+    position:absolute;
+    width:7px;
+    background-color:transparent;
+    height:100%;
+}
+.ui-side-e{
+    right:0px;
+    top:0px;
+}
 
-/*******************************************************/
+.ui-side-w{
+    left:0px;
+    top:0px;
+}
+.ui-side-n{
+    position:absolute;
+    width:100%;
+    background-color:transparent;
+    height:7px;
+    cursor: pointer;
+    left:0px;
+    top:0px;
+ }
+.ui-side-s{
+    position:absolute;
+    width:100%;
+    background-color:transparent;
+    height:7px;
+    cursor: pointer;
+    left:0px;
+    bottom:0px;
+}
+.input-wrapper{
+    text-align: center;
+
+}
+.input-wrapper input {
+    border:0px;
+    outline:none;
+    width:80%;
+    border-radius:10px
+
+}
+.input-inner{
+    display:inline-block;
+    margin-top: 10px;
+    border:1px solid #ccc;
+    border-radius:15px;
+    float:right;
+    width:50%
+}
+.room-name-wrapper{
+    float:left;
+    font-size:14px;
+    padding:15px;
+    width:49.999999%;
+    text-align: left;
+    font-weight: 700;
+}
+.room-name-wrapper i{
+    font-size:17px;
+    color:green;
+    padding-right: 5px;
+}
+.dot{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.input-inner i{
+    color:#777
+}
+.dialog-name{
+    display: inline-block;
+    float: right;
+    margin-bottom:10px;
+    color:#666;
+    clear:both;
+    font-size: 12px;
+    margin-right: -10px;
+}
+.dialog-name-other{
+    display: inline-block;
+    float: left;
+    margin-bottom:10px;
+    color:#666;
+    clear:both;
+    font-size: 12px;
+    margin-left: -10px;
+}
+.result-wrapper{
+    background-color:#C1E8C1;
+    display: none;
+}
+.square{
+    display:none
+}
+
+.st_tree{
+    padding:10px;
+}
+/* 超链接 */
+.st_tree a{
+    text-decoration:none;
+    color: #222;
+}
+/* 鼠标经过的超链接 */
+.st_tree a:hover{
+    color:#f33;
+    text-decoration:underline;
+}
+/* 菜单 */
+.st_tree ul{
+    margin:0;
+}
+/* 菜单项 */
+.tree ul li{
+    font-size:14px;
+    color:#222;
+    cursor:pointer;
+    list-style:none;
+    margin-left: 20px;
+}
+
+/* 子菜单 */
+.st_tree ul>ul>ul{
+    margin-left: 20px;
+}
+/* 子菜单项 */
+.st_tree ul li ul li{
+    padding: 0;
+    margin: 0;
+}
+/* 子菜单的父节点 */
+.st_tree .folder{
+    background:url(../img/st_icon.png) no-repeat;
+    background-position: 10px 10px;
+}
+/* 展开的父节点 */
+.st_tree .open{
+    background:url(../img/st_icon_open.png) no-repeat;
+    background-position: 8px 10px;
+}
+.usersOut,.usersIn{
+    display: none;
+}
+.usersOut.hover,.usersIn.hover{
+    display: inline-block !important;
+}
+
+.upload-article a{
+    color:#DE4915 !important;
+    font-weight: bold;
+}
