@@ -85,7 +85,7 @@ Chat.sendMessage = function (username, roomname) {
     var editor = $('.wysiwyg-editor');
     var content = editor.text();
     var message = editor.html();
-    if (content.trim() != '' || message != '') {
+    if (content.trim() !== '' || message !== '') {
         Chat.socket.send("**##CCMSG" + username + '~' + roomname + '~' + message);
         setTimeout(function () {
             editor.html('');
@@ -206,9 +206,8 @@ Chat.com = function () {
                         }
                     }
                     $('.user-list').html('');
-                    $('.room-name').html(roomname);
                     for (var i = 0; i < userlist.length; i++) {
-                        Console.list(userlist[i].username, userlist[i].info);
+                        Console.list(userlist[i].username, userlist[i].info, userlist[i].avatar);
                     }
                     Console.log(rfc.userName + ',' + rfc.newRoom, 'info_user_room_change');
                 }
@@ -274,7 +273,7 @@ Chat.com = function () {
 };
 Chat.initialize = function () {
     if (window.location.protocol === 'http:') {
-        Chat.login('ws://223.167.255.23:8080/BizChat/chat');
+        Chat.login('ws://' + window.location.host + '/BizChat/chat');
     } else {
         //Chat.connect('ws://192.168.11.79/BizChat/chat');
         Chat.login('ws://223.167.255.23:8080/BizChat/chat');
