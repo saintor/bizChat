@@ -3,78 +3,221 @@
         <title>BizFans: Business&Social</title>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 
+        <link rel="stylesheet" href="public/css/animate.css" media="screen" type="text/css"/>
         <link rel="stylesheet" href="public/css/font-awesome.css" media="screen" type="text/css"/>
-        <link rel="stylesheet" href="public/css/style.css" media="screen" type="text/css"/>
         <link rel="stylesheet" href="public/css/common.css" media="screen" type="text/css"/>
-        <link rel="stylesheet" type="text/css" href="public/css/simditor.css" />
-        <link rel="stylesheet" type="text/css" href="public/css/simditor-emoji.css" />
-
-        <script type="text/javascript" src="public/js/roomlist.js"></script>
+        <link rel="stylesheet" type="text/css" href="public/css/wysiwyg-editor.css" />
+        <link rel="stylesheet" type="text/css" href="public/css/login.css" />
+        <link rel="stylesheet" href="public/css/style.css" media="screen" type="text/css"/>
         <script type="text/javascript" src="public/js/jquery.min.js"></script>
+        <script type="text/javascript" src="public/js/login.js"></script>
+        <script type="text/javascript" src="public/js/tool.js"></script>
+        <script type="text/javascript" src="public/js/roomlist.js"></script>
         <script type="text/javascript" src="public/js/SimpleTree.js"></script>
-        <script type="text/javascript" src="public/js/module.js"></script>
-        <script type="text/javascript" src="public/js/hotkeys.js"></script>
-        <script type="text/javascript" src="public/js/uploader.js"></script>
-        <script type="text/javascript" src="public/js/simditor.js"></script>
-        <script type="text/javascript" src="public/js/simditor-emoji.js"></script>
-        <script type="text/javascript" src="public/js/main.js"></script>        
+        <script type="text/javascript" src="public/js/wysiwyg.min.js"></script>
+        <script type="text/javascript" src="public/js/wysiwyg-editor.min.js"></script>
+        <script type="text/javascript" src="public/js/chat.js"></script>
+        <script type="text/javascript" src="public/js/editor.js"></script>
+        <script type="text/javascript" src="public/js/main.js"></script>
     </head>
-    <body id="chat-body" data-uid="" style="background-image: url('public/img/background2.jpg')" class="bg-center">
-        <!--<div class="noscript"><h2 style="color: #ff0000">您的浏览器并不支持websocket</h2></div>-->
-        <div class="chat-wrapper" id="chat-wrapper" data-from="Sonu Joshi" style="position:absolute;top:5%;left:30%">
-            <div class="title-bar">
-                <span class="active-state">百事发实时商讯</span>
-                <div class="title-handle">
-                    <i class="fa fa-minus"></i>
-                    <i class="fa fa-plus"></i>
-                    <i class="fa fa-remove"></i>
+    <body id="chat-body" data-uid="" style="background-image: url('public/img/background2.jpg')" class="bg-center" >
+        <div class="modal-cover">
+            <div class="upload-dialog">
+                <div class="modal-title">
+                    分享你刚阅读的好文章
+                    <span class="modal-close" style="float:right;padding-right: 10px">X</span>
                 </div>
-            </div>
-            <div class="right-content">
-                <div style="" class="chat-middle">
-                    <ul id="console" class="chat-thread">
-                        <!--<li class="sys_info gray"><img src="public/img/info.png"><span class="user">guest11 </span>刚离开了大厅去了<span class="house">房产/出租/静安</span> 房间</li>-->                     
-                    </ul>
-                    <div class="clear-both"></div>
-                </div>
-                <div class="chat-msg" style="">
-                    <textarea placeholder="请输入..." id="chat" class="text-post" autofocus=""></textarea>
-                    <div class="bottom-send">
-                        <span class="ss_text"></span>
-                        <span class="sub_btn">发送<i id="cert"></i> </span>
-                        <ul>
-                            <li>按Enter键发送信息</li>
-                            <li>按Enter键换行</li>
-                        </ul>
+                <div class="modal-content">
+                    <div>
+                        <p>[新闻]八卦/最新消息/国内</p>
+                    </div>
+                    <div class="modal-input">
+                        文章标题:<input type="text" />
+                    </div>
+                    <div class="modal-input">
+                        文章URL:<input type="text">
+                    </div>
+                    <div>
+                        <p class="modal-tip">提示：如果您提交了多篇文章，两个小时内若有一篇文章被采纳，其他文章将被暂时忽略，谢谢！</p>
+                    </div>
+                    <div class="btn-upload-wrapper">
+                        <button class="btn-upload">提交</button>
                     </div>
                 </div>
             </div>
-            <div class="left-content">
-                <div class="right-side">
-                    <ul class="right-side-tab">
-                        <li class="tab active"><i class="fa fa-user"></i></li>
-                        <li class="tab"><i class="fa fa-home"></i></li>
-                        <li class="tab" style="border-right:0px;"><i class="fa fa-gear"></i></li>
-                        <div class="clear-both"></div>
-                    </ul>
-                    <ul class="right-side-bottom user-list" style="display: block">
-                    </ul>
-                    <ul class="right-side-bottom">
-                        <div class="st_tree" style="margin:0 auto;">
+        </div>
+        <div class="login-wrapper" style="display: block">
+            <div class="login">
+                <div class="rib"> </div>
+                <form>
+                    <h1>百事发用户登录</h1>
+                    <div class="avatar" style="float:left">
+                        <img src="public/img/avatar_log.png" class="show-avatar">
+                        <input type="hidden" value="public/img/avatar/male.gif" id="avatar-value">
+                    </div>
+                    <div style="float:right;width: 350px;padding: 20px;box-sizing: border-box;">
+                        <div style="text-align:right;margin-bottom: 20px">
+                            会员
+                            <div class="checkboxFive">
+                                <input type="checkbox" value="1" id="checkboxFiveInput" name="" class="vip" checked/>
+                                <label for="checkboxFiveInput"></label>
+                            </div>
                         </div>
-                    </ul>
-                    <ul class="right-side-bottom" >
-                        <div class="st_tree" style="margin:0 auto;">
+                        <input type="text" value="用户名" onfocus="this.value = '';" onblur="if (this.value == '') {
+                                    this.value = '用户名';
+                                }" id="username">
+                        <input type="text" value="密码" onfocus="this.value = '';" onblur="if (this.value == '') {
+                                    this.value = '密码';
+                                }" id="password">
+                        <div style="text-align:left">
+                            <input type="text" value="验证码" onfocus="this.value = '';" onblur="if (this.value == '') {
+                                        this.value = '验证码';
+                                    }" style="width:50%">
                         </div>
-                    </ul>
-                </div>
-                <div class="clear-both"></div>
-            </div>
-            <div class="resize" id="resize">
+                        <div>
+                            <p class="error-info">
+                                您输入的密码有错误
+                            </p>
+                        </div>
+                        <div class="sex-wrapper">
+                            <div class="avatar-choose-wrapper female-avatar">
+                                <img src="public/img/avatar/female1.png">
+                                <img src="public/img/avatar/female2.png">
+                                <img src="public/img/avatar/female3.png">
+                                <img src="public/img/avatar/female4.png">
+                                <img src="public/img/avatar/female5.png">
+                                <i class="fa fa-arrow-circle-o-right"></i>
+                                <div class="arrow"></div>
+                            </div>
+                            <div class="avatar-choose-wrapper male-avatar">
+                                <img src="public/img/avatar/male1.png">
+                                <img src="public/img/avatar/male2.png">
+                                <img src="public/img/avatar/male3.png">
+                                <img src="public/img/avatar/male4.png">
+                                <img src="public/img/avatar/male5.png">
+                                <i class="fa fa-arrow-circle-o-right"></i>
+                                <div class="arrow"></div>
+                            </div>
+                            <div class="avatar-choose-wrapper gay-avatar">
+                                <img src="public/img/avatar/neutral1.png">
+                                <img src="public/img/avatar/neutral2.png">
+                                <img src="public/img/avatar/neutral3.png">
+                                <img src="public/img/avatar/neutral4.png">
+                                <img src="public/img/avatar/neutral5.png">
+                                <i class="fa fa-arrow-circle-o-right"></i>
+                                <div class="arrow"></div>
+                            </div>
+                            <span class="radio-avatar male-img" style="display:inline-block"><img src="public/img/avatar/male.gif"></span>
+                            <span class="radio-avatar female-img"><img src="public/img/avatar/female.gif"></span>
+                            <span class="radio-avatar gay-img"><img src="public/img/avatar/neutral.gif" ></span>
+                            <input type="radio" name="sex" value="male" checked class="sex sex-male" />
+                            男
+                            <input type="radio" name="sex" value="female" class="sex sex-female"/>
+                            女
+                            <input type="radio" name="sex" value="ambigous" class="sex sex-gay"/>
+                            同志
+                        </div>
+                    </div>
+                    <div style="clear:both"></div>
+                    <button type="button" class="btn-login">登录 <i class="fa fa-spin fa-refresh loading"></i></button>
+                </form>
             </div>
         </div>
-        <div class="chat-open">
-            <i class="fa fa-weixin"></i>
+        <div class="dialog-wrapper" style="display: none">å
+            <input type="file" id="upload-image" style="display: none">
+            <!--<div class="noscript"><h2 style="color: #ff0000">您的浏览器并不支持websocket</h2></div>-->
+            <div class="chat-wrapper" id="chat-wrapper" data-from="Sonu Joshi" style="position:absolute;top:5%;left:30%">
+                <div class="ui-side ui-side-e"></div>
+                <div class="ui-side ui-side-w"></div>
+                <div class="ui-side-n"></div>
+                <div class="ui-side-s"></div>
+                <div class="title-bar">
+                    <span class="active-state">百事发实时商讯</span>
+                    <div class="title-handle">
+                        <i class="fa fa-square-o"></i>
+                        <i class="fa fa-plus"></i>
+                        <i class="fa fa-remove"></i>
+                    </div>
+                </div>
+                <div class="right-content">
+                    <div style="" class="chat-middle">
+                        <ul id="console" class="chat-thread">
+                            <!--<li class="sys_info gray"><img src="public/img/info.png"><span class="user">guest11 </span>刚离开了大厅去了<span class="house">房产/出租/静安</span> 房间</li>-->                     
+                        </ul>
+                        <div class="clear-both"></div>
+                    </div>
+                    <div class="chat-msg" style="">
+                        <textarea placeholder="请输入..." class="editor" class="text-post" autofocus="" maxlength="200"></textarea>
+                        <div class="bottom-send">
+                            <span class="ss_text"></span>
+                            <span class="sub-wrapper">
+                                <span class="sub_btn">发送  </span>
+                                <i id="cert"></i>
+                            </span>
+                            <ul>
+                                <li>按Enter键发送信息</li>
+                                <li>按Enter键换行</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="left-content">
+                    <div class="right-side">
+                        <ul class="right-side-tab">
+                            <li class="tab active"><i class="fa fa-user"></i></li>
+                            <li class="tab"><i class="fa fa-home"></i></li>
+                            <li class="tab" style="border-right:0px;"><i class="fa fa-newspaper-o"></i></li>
+                            <div class="clear-both"></div>
+                        </ul>
+                        <ul class="right-side-bottom" style="display: block">
+                            <div class="input-wrapper">
+                                <div class="room-name-wrapper"><i class="fa fa-home"></i><span class="room-name"></span>&nbsp;<span class="people-num"></span></div>
+                                <div class="input-inner">
+                                    <i class="fa fa-search"></i>
+                                    <input type="text" class="search-input" />
+                                </div>
+                            </div>
+                            <div style="clear: both">
+
+                            </div>
+                            <ul class="result-wrapper">
+                                <p>搜索结果：</p>
+                                <div class="result-inner">
+                                </div>
+                            </ul>
+                            <div class="user-list">
+                            </div>
+                        </ul>
+                        <ul class="right-side-bottom">
+                            <div class="st_tree room" style="margin:0 auto;">
+                            </div>
+                        </ul>
+                        <ul class="right-side-bottom" >
+                            <!--<marquee behavior="scroll" direction="left" loop="-1" scrollAmount="12" scrollDelay="42" onmouseover="this.stop();" onmouseout="this.start();">-->
+                            <!--滚动的信息-->
+                            <!--</marquee>-->
+                            <div class="sort">
+                                <i class="fa fa-gamepad icon"></i>游戏
+                            </div>
+                            <div class="game-tree">
+                                <ul class="tree">
+                                    <li class="hot">十三张</li>
+                                    <li>骰子吹牛<img src="public/img/dice.png"></li>
+                                </ul>
+                            </div>
+                            <div class="sort">
+                                <i class="fa fa-newspaper-o icon"></i>新闻/八卦
+                            </div>
+                            <div id="other-tree" style="margin:0 auto;" class="other-tree st_tree">
+                            </div>
+                        </ul>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+                <div class="resize" id="resize" title="按住拖拽">
+                    <img src="public/img/cursorB.png" width="20">
+                </div>
+            </div>
         </div>
     </body>
 </html>
