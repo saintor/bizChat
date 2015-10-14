@@ -1,6 +1,3 @@
-/**
- * Created by jimmy on 10/1/15.
- */
 var Chat = {};
 Chat.socket = null;
 var userlist = [];
@@ -8,17 +5,24 @@ var roomlist = [];
 var clientname;
 var roomname;
 var currentUser;
+var isNewLine = true;
+var msgNum = 0;
+var chat_history;
+var privateChats = {};
+var roomChanged = false;
+var cIndex = 1;
+var wIndex = 1;
 var CHAT_COM_PRRFIX = '**##C';
 var prefix = {
-    LOGIN_MEMBER: CHAT_COM_PRRFIX + 'LGNN',
-    LOGIN: CHAT_COM_PRRFIX + 'LGNN',
-    JOIN: CHAT_COM_PRRFIX + 'JOIN',
-    EXIT: CHAT_COM_PRRFIX + 'EXIT',
-    CHAT_MSG: CHAT_COM_PRRFIX + 'CMSG',
-    PRIV_CHAT: CHAT_COM_PRRFIX + 'PMSG',
-    PREV_CHAT: CHAT_COM_PRRFIX + 'PTXT',
-    ROOM_CHANGE: CHAT_COM_PRRFIX + 'RMCG',
-    USER_NEWS: CHAT_COM_PRRFIX + 'NEWS'
+    LOGIN_MEMBER: CHAT_COM_PRRFIX + 'LGNN ',
+    LOGIN: CHAT_COM_PRRFIX + 'LGNN ',
+    JOIN: CHAT_COM_PRRFIX + 'JOIN ',
+    EXIT: CHAT_COM_PRRFIX + 'EXIT ',
+    CHAT_MSG: CHAT_COM_PRRFIX + 'CMSG ',
+    PRIV_CHAT: CHAT_COM_PRRFIX + 'PMSG ',
+    ROOM_CHANGE: CHAT_COM_PRRFIX + 'RMCG ',
+    USER_NEWS: CHAT_COM_PRRFIX + 'NEWS ',
+    PREV_CHAT: CHAT_COM_PRRFIX + 'PTXT '
 };
 Chat.login = function (host) {
     if ('WebSocket' in window) {
@@ -57,48 +61,39 @@ Chat.login = function (host) {
             if (currentUser.toString() !== "false") {
                 $('.login-wrapper').hide();
                 $('.dialog-wrapper').show();
-                Console.tip('连通状态');
                 roomname = "大厅";
+                Console.tip(roomname);
                 $('.room-name').html(roomname);
-                var isNewLine = true;
                 $("#cert").click(function () {
                     $(this).parent().siblings("ul").toggleClass("hover");
                 });
-                $(".bottom-send ul>li").on("click", function () {
-                    if ($(this).text() === '按Enter键发送信息') {
-                        isNewLine = true;
-                    } else {
-                        isNewLine = false;
-                    }
-                    $(".ss_text").text($(this).text());
-                    $(".bottom-send ul").removeClass("hover");
-                });
+                toggleSend();
                 $('.wysiwyg-editor').keydown(function () {
+                    var _this = this;
                     if (isNewLine) {
                         if (event.keyCode === 13) {
-                            Chat.sendMessage(clientname, roomname);
+                            Chat.sendMessage(clientname, roomname, _this);
                         }
                     }
-                });
-                $(".sub_btn").on("click", function () {
-                    Chat.sendMessage(clientname, roomname);
-                    $('.wysiwyg-editor').html('')
+                    $(".sub_btn").on("click", function () {
+                        Chat.sendMessage(clientname, roomname, _this);
+                    });
                 });
                 Chat.com();
             } else {
-
                 $('.error-info').show(200);
                 //信息有错误
             }
         }
     };
 };
-Chat.sendMessage = function (username, roomname) {
-    var editor = $('.wysiwyg-editor');
+Chat.sendMessage = function (username, roomname, _this) {
+    var editor = $(_this);
     var content = editor.text();
     var message = editor.html();
+    console.log(message);
     if (content.trim() !== '' || message !== '') {
-        Chat.socket.send("**##CCMSG" + username + '~' + roomname + '~' + message);
+        Chat.socket.send(prefix.CHAT_MSG + username + '~' + roomname + '~' + message);
         setTimeout(function () {
             editor.html('');
         }, 5);
@@ -113,7 +108,6 @@ Chat.com = function () {
         };
         Chat.socket.onmessage = function (message) {
             if (message.data.indexOf("*ULIST") >= 0) {
-                console.log(message.data);
                 var jsonStr = message.data.substring(7, message.data.length);
                 var rfc = eval("(" + jsonStr + ")");
                 userlist = rfc;
@@ -140,7 +134,6 @@ Chat.com = function () {
                     }
                     return "false";
                 };
-
                 $(".tree a").on("click", function () {
                     var base;
                     if ($(this).parent("li").parent("ul").prev().text() === '') {
@@ -150,14 +143,12 @@ Chat.com = function () {
                     }
                     var result = Chat.extractString(base);
                     if (roomname === result) {
-                        Console.log("你目前已在 <i>" + result + "</i> 房间", 'general');
+                        Console.log("你目前已在 <i>" + result + "</i> 房间", 'general', null, '.threadv0');
                     } else {
-                        Chat.socket.send("**##CRMCG" + roomname + "~" + result + "~" + clientname);
-                        $(".tip").text("-->" + result);
-                        $('.tip').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-                            $(this).removeClass('animated bounceInLeft');
-                        });
-                        animateDom();
+                        Chat.socket.send(prefix.ROOM_CHANGE + roomname + "~" + result + "~" + clientname);
+                        if (roomChanged === false) {
+                            $('.loading-chat-wrapper').show();
+                        }
                     }
                 });
             } else if (message.data.indexOf("*URMVD") >= 0) {
@@ -176,7 +167,8 @@ Chat.com = function () {
                     for (var i = 0; i < userlist.length; i++) {
                         Console.list(userlist[i].username, userlist[i].info, userlist[i].avatar);
                     }
-                    Console.log(userName, 'info_user_exit');
+                    $('.people-num').text('(' + userlist.length + ')');
+                    Console.log(userName, 'info_user_exit', null, '.threadv0');
                 }
                 var newCount = parseInt($("#" + roomID).find("span").text()) - 1;
                 if (newCount > 0) {
@@ -197,20 +189,46 @@ Chat.com = function () {
                     for (var i = 0; i < userlist.length; i++) {
                         Console.list(userlist[i].username, userlist[i].info, userlist[i].avatar);
                     }
-                    Console.log(username, 'info_user_join');
+                    $('.people-num').text('(' + userlist.length + ')');
+                    Console.log(username, 'info_user_join', null, '.threadv0');
                 }
                 $("#" + rfc[0].roomID).find("img.usersIn").addClass("hover").siblings("img.usersOut").removeClass("hover"); //regardless
                 $("#" + rfc[0].roomID).find("span").text(userlist.length);
             } else if (message.data.indexOf("*UCGRM") >= 0) {
                 jsonStr = message.data.substring(7, message.data.length);
                 rfc = eval("(" + jsonStr + ")");
-
+                $("#" + rfc.oldID).find("span").text(rfc.oldCount);
+                $("#" + rfc.newID).find("span").text(rfc.newCount);
+                if (rfc.newCount > 0) {
+                    //$("#"+rfc.newID).find("img").attr("src", "public/img/usersIn.png");
+                    $("#" + rfc.newID).find("img.usersIn").addClass("hover").siblings("img.usersOut").removeClass("hover");//.attr("src", "public/img/usersIn.png");
+                }
+                if (rfc.oldCount < 1) {
+                    //$("#"+rfc.oldID).find("img").attr("src", "public/img/usersOut.png");
+                    $("#" + rfc.oldID).find("img.usersOut").addClass("hover").siblings("img.usersIn").removeClass("hover");
+                    $("#" + rfc.oldID).find("span").text("--");
+                }
                 if (clientname === rfc.userName) {
                     roomname = rfc.newRoom;
+                    $('.loading-chat-wrapper').hide();
                     $("#" + rfc.oldID).find(".arrowSign").removeClass("hover");
                     $("#" + rfc.newID).find(".arrowSign").addClass("hover");
                     $('.room-name').html(roomname);
                     $('.people-num').text('(' + userlist.length + ')');
+
+                    $('.tab').removeClass('active');
+                    $('.tab').eq(0).addClass('active');
+                    $('.room-wrapper').hide();
+                    $('.chat-thread').html('');
+                    //$(".tip").text("-->" + result);
+                    $('.tip').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+                        $(this).removeClass('animated bounceInLeft');
+                    });
+                    animateDom();
+                    $('.userlist').show();
+                    Console.tip("-->" + roomname);
+                    Console.log(chat_history, 'prev', null, '.threadv0');
+                    roomChanged = false;
                 } else if (roomname === rfc.oldRoom) {
                     for (var k = 0; k < userlist.length; k++) {
                         if (userlist[k].username === rfc.userName) {
@@ -222,19 +240,8 @@ Chat.com = function () {
                     for (var i = 0; i < userlist.length; i++) {
                         Console.list(userlist[i].username, userlist[i].info, userlist[i].avatar);
                     }
-                    Console.log(rfc.userName + ',' + rfc.newRoom, 'info_user_room_change');
-                }
-
-                $("#" + rfc.oldID).find("span").text(rfc.oldCount);
-                $("#" + rfc.newID).find("span").text(rfc.newCount);
-                if (rfc.newCount > 0) {
-                    //$("#"+rfc.newID).find("img").attr("src", "public/img/usersIn.png");
-                    $("#" + rfc.newID).find("img.usersIn").addClass("hover").siblings("img.usersOut").removeClass("hover");//.attr("src", "public/img/usersIn.png");
-                }
-                if (rfc.oldCount < 1) {
-                    //$("#"+rfc.oldID).find("img").attr("src", "public/img/usersOut.png");
-                    $("#" + rfc.oldID).find("img.usersOut").addClass("hover").siblings("img.usersIn").removeClass("hover");
-                    $("#" + rfc.oldID).find("span").text("--");
+                    $('.people-num').text('(' + userlist.length + ')');
+                    Console.log(rfc.userName + ',' + rfc.newRoom, 'info_user_room_change', null, '.threadv0');
                 }
             } else if (message.data.indexOf("*URMMT") >= 0) {
                 var roomMeta = message.data.substr(7),
@@ -263,22 +270,58 @@ Chat.com = function () {
                         window.open($(this).attr('href'));
                     }
                 });
-                showCover();
-                //$(document).on("click",".hyperlink",function(){
-                //    alert(1);
-                //});
-            } else if (message.data.indexOf(prefix.PRIV_CHAT) >= 0) {
+                showUploadPrompt();
+                $('#upload-article').click(function () {
+                    var newstitle = $('#article-title').val(),
+                            newsurl = $('#article-url').val(),
+                            path = $('.modal-node').text();
 
+                    if ($.trim(newstitle).length > 0 && $.trim(newsurl).length > 0) {
+                        if (newsurl.indexOf('http://') != 0 && newsurl.indexOf('https://') != 0) {
+                            alert('请输入正确的URL协议（http://abc.com）');
+                        } else {
+                            var article = {
+                                username: currentUser.name,
+                                newstitle: newstitle,
+                                newsurl: newsurl,
+                                path: path
+                            };
+                            article = JSON.stringify(article);
+                            Chat.socket.send(prefix.USER_NEWS + article);
+                        }
+                    } else {
+                        alert('标题或URL不得为空');
+                    }
+                });
+            } else if (message.data.indexOf(prefix.USER_NEWS) >= 0) {
+                //跳出新闻上传回执内容框： var respond = 。。。。。 
+                $('.upload-dialog').hide();
+            }
+            else if (message.data.indexOf(prefix.PRIV_CHAT) >= 0) {
+                var msg = message.data.substr(prefix.PRIV_CHAT.length);
+                var data = eval("(" + msg + ")");
+                console.log(data);
+                var reciever = data.reciever;
+                if (privateChats[reciever] === undefined) {
+                    msgNum++;
+                    showMsgNum(msgNum);
+                    //sender reciver message
+                    insertUnread(data.reciever, data.message);
+                } else {
+                    Console.log(data.message, 'other', currentUser, '.threadv' + privateChats[reciever]);
+                }
             } else if (message.data.indexOf(prefix.PREV_CHAT) >= 0) {
-                var prev_msg = message.data.substr(prefix.PREV_CHAT.length);
-                Console.log(prev_msg, 'general', null);
+                chat_history = message.data.substr(prefix.PREV_CHAT.length);
+                roomChanged = true;
             }
             else {
+                console.log(message.data);
                 var data = eval("(" + message.data + ")");
                 //$("#十三张").find(".arrowSign").addClass("hover");
                 //alert(data.userMessage);
+                console.log(data.message);
                 if (currentUser.name === data.username) {
-                    Console.log(data.message, 'my', currentUser);
+                    Console.log(data.message, 'my', currentUser, '.threadv0');
                 } else {
                     for (var i = 0; i < userlist.length; i++) {
                         if (userlist[i].username === data.username) {
@@ -292,41 +335,45 @@ Chat.com = function () {
 };
 Chat.initialize = function () {
     if (window.location.protocol === 'http:') {
-        Chat.login('ws://' + window.location.host + '/BizChat/chat');
+        //Chat.login('ws://' + window.location.host + '/BizChat/chat');
+        Chat.login('ws://223.167.255.254:8080/BizChat/chat');
     } else {
         //Chat.connect('ws://192.168.11.79/BizChat/chat');
-        Chat.login('ws://223.167.255.23:8080/BizChat/chat');
+        Chat.login('ws://223.167.255.254:8080/BizChat/chat');
     }
 };
 var Console = {};
-Console.log = function (message, type, user) {
+Console.log = function (message, type, user, window) {
     if (type === 'my') {
         var avatar = "background-image:url('" + user.avatar + "')";
         console.log(avatar);
-        $('<p class="dialog-name">' + user.name + '</p><li class="my-chat" style="break-word"><span class="chat-my-avatar" style="' + avatar + '"></span>' + htmlDecode(message) + '</li>').appendTo('#console');
+        $('<p class="dialog-name">' + user.name + '</p><li class="my-chat" style="break-word"><span class="chat-my-avatar" style="' + avatar + '"></span>' + htmlDecode(message) + '</li>').appendTo(window);
         $('.wysiwyg-editor').html('');
-        scrollBack();
+        scrollBack(window);
     } else if (type === 'other') {
         var avatar = "background-image:url('" + user.avatar + "')";
-        $('<p class="dialog-name-other">' + user.username + '</p><li class="other-chat" style="break-word"><span class="chat-other-avatar" style="' + avatar + '"></span>' + htmlDecode(message) + '</li>').appendTo('#console');
-        scrollBack();
+        $('<p class="dialog-name-other">' + user.name + '</p><li class="other-chat" style="break-word"><span class="chat-other-avatar" style="' + avatar + '"></span>' + htmlDecode(message) + '</li>').appendTo(window);
+        scrollBack(window);
     } else if (type === 'info_user_room_change') {
         var messages = message.split(',');
-        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i>' + messages[0] + '</i></strong></span>&nbsp刚离开去了<i><strong>' + messages[1]
-                + '</strong></i> 房间</li>').appendTo('#console');
-        scrollBack();
+        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i><u>' + messages[0] + '</u></i></strong></span>&nbsp刚离开去了<i><strong>' + messages[1]
+                + '</strong></i> 房间</li>').appendTo(window);
+        scrollBack(window);
     } else if (type === 'info_user_exit') {
-        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i>' + message + '</i></strong></span>&nbsp刚登出系统.</li>').appendTo('#console');
-        scrollBack()
+        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i><u>' + message + '</u></i></strong></span>&nbsp刚登出系统.</li>').appendTo(window);
+        //scrollBack(window)
     } else if (type === 'info_user_join') {
-        $('<li class="sys_info oliver"><img src="public/img/info.png"><span class="user"><strong><i>' + message + '</i></strong></span>&nbsp刚进入房间</li>').appendTo('#console');
-        scrollBack()
+        $('<li class="sys_info oliver"><img src="public/img/info.png"><span class="user"><strong><i><u>' + message + '</i></u></strong></span>&nbsp刚进入房间</li>').appendTo(window);
+        scrollBack(window)
     } else if (type === 'general') {
-        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user">' + message + '</span></li>').appendTo('#console');
-        scrollBack()
+        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user">' + message + '</span></li>').appendTo(window);
+        scrollBack(window)
     } else if (type === 'prev') {
-
-        scrollBack()
+        if (message.indexOf('房内已长时间') === 0) {
+            $('<li class="sys_info gray chat_history"><img src="public/img/info.png"><span class="user">' + htmlDecode(message) + '</span></li>').appendTo(window);
+        } else {
+            $('<li class="sys_info gray chat_history"><span class="user">' + htmlDecode(message) + '</span></li>').appendTo(window);
+        }
     }
     $('.my-chat a').each(function () {
         $(this).attr('target', '_blank');
