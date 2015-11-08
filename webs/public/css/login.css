@@ -1,0 +1,304 @@
+/*--
+Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+--*/
+/* start editing from here */
+input{
+    box-sizing:border-box
+}
+/* start editing from here */
+a{text-decoration:none;}
+.txt-rt{text-align:right;}/* text align right */
+.txt-lt{text-align:left;}/* text align left */
+.txt-center{text-align:center;}/* text align center */
+.float-rt{float:right;}/* float right */
+.float-lt{float:left;}/* float left */
+.clear{clear:both;}/* clear float */
+.pos-relative{position:relative;}/* Position Relative */
+.pos-absolute{position:absolute;}/* Position Absolute */
+.vertical-base{	vertical-align:baseline;}/* vertical align baseline */
+.vertical-top{	vertical-align:top;}/* vertical align top */
+.underline{	padding-bottom:5px;	border-bottom: 1px solid #eee; margin:0 0 20px 0;}/* Add 5px bottom padding and a underline */
+nav.vertical ul li{	display:block;}/* vertical menu */
+nav.horizontal ul li{	display: inline-block;}/* horizontal menu */
+/*end reset*/
+/*--login start here--*/
+body{
+    background:#2C3E50;
+    padding:100px 0px 30px 0px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 100%;
+}
+.login {
+    width: 550px;
+    margin: 130px auto;
+    background: #fff;
+    padding: 60px 20px;
+    border-radius: 0px 0px 5px 5px;
+    position: relative;
+}
+
+
+form {
+    text-align: center;
+}
+.login input[type="text"] {
+    outline: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: #bcbcbc;
+    padding: 15px 20px;
+    background: #F3F5F6;
+    border-top: 3px solid #EEF0F1;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    margin: 0px 0px 10px 0px;
+    width: 100%;
+    -webkit-appearance: none;
+    display: inline-block;
+    outline: none;
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
+}
+.login input[type="password"]{
+    outline: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: #bcbcbc;
+    padding: 15px 20px;
+    background: #F3F5F6;
+    border-top: 3px solid #EEF0F1;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    margin: 0px 0px 10px 0px;
+    width: 70%;
+    display: inline-block;
+    outline: none;
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
+}
+.btn-login {
+    background: #2ECC71;
+    color: #FFF;
+    font-size: 17px;
+    font-weight: 400;
+    width: 40%;
+    border-radius: 6px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 6px;
+    -o-border-radius: 6px;
+    margin: 0px 0px 0px 0px;
+    border-bottom: 3px solid #2AB766;
+    display: inline-block;
+    cursor: pointer;
+    outline: none;
+    border-right: none;
+    border-left: none;
+    border-top: none;
+}
+.btn-login:hover {
+    background:#CC6E91;
+    border-bottom: 3px solid #C14171;
+    transition: 0.5s all;
+    -webkit-transition: 0.5s all;
+    -moz-transition: 0.5s all;
+    -o-transition: 0.5s all;
+}
+.copyright {
+    padding: 150px 0px 0px 0px;
+    text-align: center;
+}
+.copyright p {
+    font-size: 15px;
+    font-weight: 400;
+    color: #fff;
+}
+.copyright p a{
+    font-size: 15px;
+    font-weight: 400;
+    color: #2ECC71;
+}
+.copyright p a:hover{
+    color: #E92E74;
+    transition: 0.5s all;
+    -webkit-transition: 0.5s all;
+    -moz-transition: 0.5s all;
+    -o-transition: 0.5s all;
+}
+/*--login end here--*/
+/*--meadia quiries start here--*/
+
+.btn-login{
+    font-size: 14px;
+    padding: 10px 7px;
+    width: 80%;
+}
+.login input[type="password"] {
+    font-size: 15px;
+    padding: 10px 20px;
+}
+.login input[type="text"] {
+    font-size: 14px;
+    padding: 10px 20px;
+}
+
+.login input[type="text"] {
+    font-size: 12px;
+}
+.login input[type="password"] {
+    font-size: 12px;
+}
+body {
+    padding: 50px 0px 30px 0px;
+}
+h1 {
+    font-size: 21px;
+    color: rgb(115, 115, 115);
+}
+.btn-login {
+    font-size: 14px;
+    padding: 10px 7px;
+    width: 100px;
+}
+.copyright {
+    padding: 85px 0px 0px 0px;
+}
+.copyright p {
+    font-size: 13px;
+}
+.copyright p a{
+    font-size: 13px;
+}
+.login {
+    padding: 40px 20px;
+}
+.avatar img{
+    width:100px;
+    margin-top: 100px;
+    margin-left: 20px;
+}
+.avatar{
+    margin-bottom: 20px;
+}
+.sex-wrapper{
+    margin:20px 0px 20px 0px;
+    color:#666;
+}
+.avatar-choose-wrapper{
+    width:310px;
+    margin: 10px auto;
+    padding: 9px 14px;
+    background-color: #ccc;
+    border-radius: 6px;
+    display: none;
+    position: relative;
+    z-index: 10;
+
+}
+.avatar-choose-wrapper i{
+    font-size:21px;
+    display:block;
+}
+.avatar-choose-wrapper img{
+    width:40px;
+    height:40px;
+    margin-right:8px;
+    vertical-align: middle;
+}
+.sex-wrapper{
+    position: relative;
+    text-align: left;
+}
+
+.arrow{
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #ccc;
+    position: absolute;
+    bottom: -10px;
+}
+.radio-avatar{
+    display:none;
+    position: relative;
+    cursor:pointer
+}
+.radio-avatar img{
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.arrow-down{
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid #666;
+    display: inline-block;
+    top:7px;
+    right:0px;
+}
+.sex{
+    margin-left:15px;
+}
+
+.checkboxFive {
+    vertical-align: top;
+    width: 25px;
+    display: inline-block;
+    position: relative;
+}
+
+.checkboxFive label {
+    cursor: pointer;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 0;
+    left: 0;
+    background: #eee;
+    border:1px solid #ddd;
+}
+.checkboxFive label:after {
+    opacity: 0.2;
+    content: '';
+    position: absolute;
+    width: 9px;
+    height: 5px;
+    background: transparent;
+    top: 6px;
+    left: 7px;
+    border: 3px solid #2ECC71;
+    border-top: none;
+    border-right: none;
+
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+.checkboxFive label:hover::after {
+    opacity: 0.5;
+}
+
+/**
+ * Create the checkbox state for the tick
+ */
+.checkboxFive input[type=checkbox]:checked + label:after {
+    opacity: 1;
+}
+.avatar-tab img{
+    cursor: pointer;
+}
+
+.fa-angle-left{position:absolute;left:15px;top:17px;}
+.fa-angle-right{position:absolute;right:15px;top:17px;}
