@@ -193,9 +193,9 @@ h1 {
     color:#666;
 }
 .avatar-choose-wrapper{
-    width:310px;
+    width:284px;
     margin: 10px auto;
-    padding: 9px 14px;
+    padding: 9px 0px;
     background-color: #ccc;
     border-radius: 6px;
     display: none;
@@ -300,5 +300,5 @@ h1 {
     cursor: pointer;
 }
 
-.fa-angle-left{position:absolute;left:15px;top:17px;}
-.fa-angle-right{position:absolute;right:15px;top:17px;}
+.fa-angle-left{position:absolute;left:4px;top:18px;}
+.fa-angle-right{position:absolute;right:4px;top:18px;}
