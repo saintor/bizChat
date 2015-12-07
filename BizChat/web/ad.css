@@ -8,7 +8,7 @@ and open the template in the editor.
     Author     : toshiba
 */
 *{margin:0;padding:0;}
-//.ad li{width:406px;height:132px;background:white;color:red;list-style:none;display:none;position:absolute;padding:0 4px;}
+/*.ad li{width:406px;height:132px;background:white;color:red;list-style:none;display:none;position:absolute;padding:0 4px;}*/
 .adDetail{float:left;width:405px;}
 .adDetail .adTitle{line-height:14px;font-size:13px;font-weight:bold;border-bottom:1px solid #000;width:100%}
 .adDetail .adVendor{word-wrap: break-word;font-size:15px;}

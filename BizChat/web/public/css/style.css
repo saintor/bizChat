@@ -870,7 +870,7 @@ i{
     color:#666
 }
 .tab-name{
-    //position: relative;
+    /*position: relative;*/
 }
 .avatar-choose-wrapper img:hover{
     border: 1px solid #000;
