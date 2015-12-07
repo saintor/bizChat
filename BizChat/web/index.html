@@ -5,11 +5,12 @@
 
         <link rel="stylesheet" href="public/css/animate.css" media="screen" type="text/css"/>
         <link rel="stylesheet" href="public/css/font-awesome.css" media="screen" type="text/css"/>
-        <link rel="stylesheet" href="public/css/common.css" media="screen" type="text/css"/>
         <link rel="stylesheet" type="text/css" href="public/css/wysiwyg-editor.css" />
         <link rel="stylesheet" type="text/css" href="public/css/login.css" />
         <link rel="stylesheet" href="public/css/style.css" media="screen" type="text/css"/>
+        <link rel="stylesheet" href="public/css/common.css" media="screen" type="text/css"/>
         <script type="text/javascript" src="public/js/jquery.min.js"></script>
+        <script type="text/javascript" src="public/js/marquee.min.js"></script>
         <script type="text/javascript" src="public/js/login.js"></script>
         <script type="text/javascript" src="public/js/tool.js"></script>
         <script type="text/javascript" src="public/js/roomlist.js"></script>
@@ -19,30 +20,40 @@
         <script type="text/javascript" src="public/js/chat.js"></script>
         <script type="text/javascript" src="public/js/editor.js"></script>
         <script type="text/javascript" src="public/js/main.js"></script>
+        <style>
+            .modal-content{padding:0 10px;}
+            .modal-node{font-size:12px;font-weight:bold}
+        </style>
+        <script type="text/javascript" >
+            //判读浏览器是否支持websocket
+            $().ready(function () {
+                if (!window.WebSocket) {
+                    alert("对不起, 你的浏览器不支持WebSocket功能啊");
+                }
+            });
+        </script>
     </head>
     <body id="chat-body" data-uid="" style="background-image: url('public/img/background2.jpg')" class="bg-center" >
-        <div class="modal-cover">
-            <div class="upload-dialog">
-                <div class="modal-title">
-                    分享你刚阅读的好文章
-                    <span class="modal-close" style="float:right;padding-right: 10px">X</span>
+        <div class="upload-dialog">
+            <div class="modal-title">
+                分享你刚阅读的好文章
+                <span class="modal-close" style="float:right;padding-right: 5px;padding-top: 3px"><i class="fa fa-close"></i></span>
+            </div>
+            <div class="modal-content">
+                <div>
+                    <p class="modal-node"  style="padding-top: 3px"></p>
                 </div>
-                <div class="modal-content">
-                    <div>
-                        <p>[新闻]八卦/最新消息/国内</p>
-                    </div>
-                    <div class="modal-input">
-                        文章标题:<input type="text" />
-                    </div>
-                    <div class="modal-input">
-                        文章URL:<input type="text">
-                    </div>
-                    <div>
-                        <p class="modal-tip">提示：如果您提交了多篇文章，两个小时内若有一篇文章被采纳，其他文章将被暂时忽略，谢谢！</p>
-                    </div>
-                    <div class="btn-upload-wrapper">
-                        <button class="btn-upload">提交</button>
-                    </div>
+                <div class="modal-input">
+                    文章标题:<input type="text" id="article-title">
+                </div>
+                <div class="modal-input">
+                    文章URL:<input type="text" id="article-url" value="http://">
+                </div>
+                <div>
+                    <p class="modal-tip">提示：如果您提交了多篇文章，两个小时内若有一篇文章被采纳，其他文章将被暂时忽略，谢谢！</p>
+                </div>
+                <div class="btn-upload-wrapper">
+                    <button class="btn-upload" id="upload-article">提交</button>
                 </div>
             </div>
         </div>
@@ -50,23 +61,26 @@
             <div class="login">
                 <div class="rib"> </div>
                 <form>
-                    <h1>百事发用户登录</h1>
+                    <h1>百事发实时商讯</h1>
                     <div class="avatar" style="float:left">
                         <img src="public/img/avatar_log.png" class="show-avatar">
-                        <input type="hidden" value="public/img/avatar/male.gif" id="avatar-value">
+                        <input type="hidden" value="public/img/male.png" id="avatar-value">
                     </div>
                     <div style="float:right;width: 350px;padding: 20px;box-sizing: border-box;">
                         <div style="text-align:right;margin-bottom: 20px">
                             会员
                             <div class="checkboxFive">
-                                <input type="checkbox" value="1" id="checkboxFiveInput" name="" class="vip" checked/>
+                                <input type="checkbox" value="1" id="checkboxFiveInput" name="" class="vip"  checked/>
                                 <label for="checkboxFiveInput"></label>
                             </div>
                         </div>
-                        <input type="text" value="用户名" onfocus="this.value = '';" onblur="if (this.value == '') {
-                                    this.value = '用户名';
-                                }" id="username">
-                        <input type="text" value="密码" onfocus="this.value = '';" onblur="if (this.value == '') {
+                        <input type="text" value="用户名" 
+                               onkeyup="value = value.replace(/[^(\w|\u4E00-\u9FA5|\s)]/g, '')" 
+                               onfocus="this.value = '';" 
+                               onblur="if (this.value === '') {
+                                           this.value = '用户名';
+                                       }" id="username">
+                        <input type="text" value="密码" onfocus="this.value = '';" onblur="if (this.value === '') {
                                     this.value = '密码';
                                 }" id="password">
                         <div style="text-align:left">
@@ -75,41 +89,69 @@
                                     }" style="width:50%">
                         </div>
                         <div>
-                            <p class="error-info">
-                                您输入的密码有错误
-                            </p>
+                            <p class="error-info"> </p>
                         </div>
                         <div class="sex-wrapper">
                             <div class="avatar-choose-wrapper female-avatar">
-                                <img src="public/img/avatar/female1.png">
-                                <img src="public/img/avatar/female2.png">
-                                <img src="public/img/avatar/female3.png">
-                                <img src="public/img/avatar/female4.png">
-                                <img src="public/img/avatar/female5.png">
-                                <i class="fa fa-arrow-circle-o-right"></i>
+                                <i class="fa fa-angle-left" style="display:none;"></i>
+                                <div class="avatar-tab">
+                                    <img src="public/img/avatar/female1.png">
+                                    <img src="public/img/avatar/female2.png">
+                                    <img src="public/img/avatar/female3.png">
+                                    <img src="public/img/avatar/female4.png">
+                                    <img src="public/img/avatar/female5.png">
+                                </div>
+                                <div class="avatar-tab" style="display: none">
+                                    <img src="public/img/avatar/female6.png">
+                                    <img src="public/img/avatar/female7.png">
+                                    <img src="public/img/avatar/female8.png">
+                                    <img src="public/img/avatar/female9.png">
+                                    <img src="public/img/avatar/female10.png">
+                                </div>
+                                <i class="fa fa-angle-right"></i>
                                 <div class="arrow"></div>
                             </div>
                             <div class="avatar-choose-wrapper male-avatar">
-                                <img src="public/img/avatar/male1.png">
-                                <img src="public/img/avatar/male2.png">
-                                <img src="public/img/avatar/male3.png">
-                                <img src="public/img/avatar/male4.png">
-                                <img src="public/img/avatar/male5.png">
-                                <i class="fa fa-arrow-circle-o-right"></i>
+                                <i class="fa fa-angle-left" style="display:none;"></i>
+                                <div class="avatar-tab">
+                                    <img src="public/img/avatar/male1.png">
+                                    <img src="public/img/avatar/male2.png">
+                                    <img src="public/img/avatar/male3.png">
+                                    <img src="public/img/avatar/male4.png">
+                                    <img src="public/img/avatar/male5.png">
+                                </div>
+                                <div class="avatar-tab" style="display: none">
+                                    <img src="public/img/avatar/male6.png">
+                                    <img src="public/img/avatar/male7.png">
+                                    <img src="public/img/avatar/male8.png">
+                                    <img src="public/img/avatar/male9.png">
+                                    <img src="public/img/avatar/male10.png">
+                                </div>
+                                <i class="fa fa-angle-right"></i>
                                 <div class="arrow"></div>
                             </div>
                             <div class="avatar-choose-wrapper gay-avatar">
-                                <img src="public/img/avatar/neutral1.png">
-                                <img src="public/img/avatar/neutral2.png">
-                                <img src="public/img/avatar/neutral3.png">
-                                <img src="public/img/avatar/neutral4.png">
-                                <img src="public/img/avatar/neutral5.png">
-                                <i class="fa fa-arrow-circle-o-right"></i>
+                                <i class="fa fa-angle-left" style="display:none;"></i>
+                                <div class="avatar-tab">
+                                    <img src="public/img/avatar/neutral1.png">
+                                    <img src="public/img/avatar/neutral2.png">
+                                    <img src="public/img/avatar/neutral3.png">
+                                    <img src="public/img/avatar/neutral4.png">
+                                    <img src="public/img/avatar/neutral5.png">
+                                </div>
+                                <div class="avatar-tab" style="display:none;">
+                                    <img src="public/img/avatar/neutral6.png">
+                                    <img src="public/img/avatar/neutral7.png">
+                                    <img src="public/img/avatar/neutral8.png">
+                                    <img src="public/img/avatar/neutral9.png">
+                                    <img src="public/img/avatar/neutral10.png">
+                                </div>
+                                <i class="fa fa-angle-right"></i>
                                 <div class="arrow"></div>
                             </div>
-                            <span class="radio-avatar male-img" style="display:inline-block"><img src="public/img/avatar/male.gif"></span>
-                            <span class="radio-avatar female-img"><img src="public/img/avatar/female.gif"></span>
-                            <span class="radio-avatar gay-img"><img src="public/img/avatar/neutral.gif" ></span>
+                            <span class="radio-avatar male-img" style="display:inline-block"><img src="public/img/avatar/male.gif"><div class="arrow-down"></div></span>
+                            <span class="radio-avatar female-img"><img src="public/img/avatar/female.gif"><div class="arrow-down"></div></span>
+                            <span class="radio-avatar gay-img"><img src="public/img/avatar/neutral.gif" ><div class="arrow-down"></div></span>
                             <input type="radio" name="sex" value="male" checked class="sex sex-male" />
                             男
                             <input type="radio" name="sex" value="female" class="sex sex-female"/>
@@ -123,16 +165,16 @@
                 </form>
             </div>
         </div>
-        <div class="dialog-wrapper" style="display: none">å
+        <div class="dialog-wrapper" style="display: none">what hell
             <input type="file" id="upload-image" style="display: none">
             <!--<div class="noscript"><h2 style="color: #ff0000">您的浏览器并不支持websocket</h2></div>-->
-            <div class="chat-wrapper" id="chat-wrapper" data-from="Sonu Joshi" style="position:absolute;top:5%;left:30%">
+            <div class="chat-wrapper" id="chat-wrapper" data-from="Sonu Joshi" style="overflow:hidden;position:absolute;top:5%;left:25%;">
                 <div class="ui-side ui-side-e"></div>
                 <div class="ui-side ui-side-w"></div>
                 <div class="ui-side-n"></div>
                 <div class="ui-side-s"></div>
                 <div class="title-bar">
-                    <span class="active-state">百事发实时商讯</span>
+                    百事发实时商讯
                     <div class="title-handle">
                         <i class="fa fa-square-o"></i>
                         <i class="fa fa-plus"></i>
@@ -141,8 +183,8 @@
                 </div>
                 <div class="right-content">
                     <div style="" class="chat-middle">
-                        <ul id="console" class="chat-thread">
-                            <!--<li class="sys_info gray"><img src="public/img/info.png"><span class="user">guest11 </span>刚离开了大厅去了<span class="house">房产/出租/静安</span> 房间</li>-->                     
+                        <div class="loading-chat-wrapper"><i class="fa fa-spinner fa-spin"></i></div>
+                        <ul id="console" class="chat-thread threadv0">
                         </ul>
                         <div class="clear-both"></div>
                     </div>
@@ -169,7 +211,7 @@
                             <li class="tab" style="border-right:0px;"><i class="fa fa-newspaper-o"></i></li>
                             <div class="clear-both"></div>
                         </ul>
-                        <ul class="right-side-bottom" style="display: block">
+                        <ul class="right-side-bottom userlist" style="display: block">
                             <div class="input-wrapper">
                                 <div class="room-name-wrapper"><i class="fa fa-home"></i><span class="room-name"></span>&nbsp;<span class="people-num"></span></div>
                                 <div class="input-inner">
@@ -178,7 +220,6 @@
                                 </div>
                             </div>
                             <div style="clear: both">
-
                             </div>
                             <ul class="result-wrapper">
                                 <p>搜索结果：</p>
@@ -188,7 +229,10 @@
                             <div class="user-list">
                             </div>
                         </ul>
-                        <ul class="right-side-bottom">
+                        <ul class="right-side-bottom room-wrapper">
+                            <div class="sort">
+                                <i class="fa fa-wifi"></i>分类信息
+                            </div>
                             <div class="st_tree room" style="margin:0 auto;">
                             </div>
                         </ul>
@@ -219,5 +263,172 @@
                 </div>
             </div>
         </div>
+        <div class="chat-center">
+            <div class="unread-msg-wrapper">
+                <div class="page-header">消息中心</div>
+                <ul class="unread-msg-list">
+
+                </ul>
+            </div>
+            <div class="launch-icon">
+                <div><span class="msg-num animated bounce">2</span></div>
+                <i class="fa fa-info-circle"></i>
+            </div>
+        </div>
+        <div class="private-chat" id="rex_div" style="z-index: 99; position: absolute;width:700px !important;height:520px !important;background-color:RGB(238,239,238);font-size:13px;font-family:微软雅黑;border:5px solid #69696A;border-radius:5px;box-shadow:0px 0px 0px RGB(238,239,238,0);box-shadow: 0px 0px 0px #ccc;">
+            <div class="title-bar">
+                <span class="active-state">发布消息</span>
+                <div class="title-handle">
+                    <i class="fa fa-close" onclick="rex_close()"></i>
+                </div>
+            </div>
+            <div class="chat-middle" style="height:485px">
+                <div class="loading-chat-wrapper"><i class="fa fa-spinner fa-spin"></i></div>
+                <div style="text-align:center;padding-top:10px">
+                    <div style="display:inline">编写你的广告信息（只限于本主题房间展示）</div>
+                    <div style="float:right;display:inline"><i class="fa fa-credit-card"></i>&nbsp;<balance></balance>&nbsp;&nbsp;</div>
+                    <div style="clear:both"></div>
+                </div>
+                <div style="margin-top:30px;" id="rex_all">
+                    <div style="margin:10px auto;width:580px">
+                        商家名称：<input type="text" id="adVendor" onkeyup="rex_string('adVendor', 30, 100);" style="width:500px;height:30px">
+                    </div>
+                    <div style="margin:10px auto;width:580px">
+                        广告标题：<input type="text" id="adTitle" onkeyup="rex_string('adTitle', 30, 120);" style="width:500px;height:30px"> 
+                    </div>
+                    <div style="margin:10px auto;width:580px">
+                        广告图片：
+                        <input type="text" id="rex_imgurl" disabled="disabled" style="margin-left:-3px;width:400px;height:30px">
+                        <input type="button" value="浏览" style="margin-right:15px;width:90px;float:right;z-index:1;height:30px">
+                        <input type="file" id="adImage" style="margin-left:9px;z-index:2;position: absolute;width:90px;height:30px;cursor:pointer;opacity:0" onchange="rex_img()">
+                        <div style="clear:both"></div>
+                    </div>
+                    <div style="margin:10px auto;width:580px">
+                        相关链接：<input type="text" id="adUrl" onchange="rex_url()" maxlength="150" style="width:500px;height:30px">
+                    </div>
+                    <div style="margin:10px auto 30px auto;width:580px">
+                        <div style="line-height:150px;float:left" >广告内容：</div>
+                        <textarea type="text" id="adContent" onkeyup="rex_string('adContent', 180, 850);" style="float:left;resize:none;width:500px;height:150px"></textarea>
+                        <div style="clear:both"></div>
+                    </div>
+                    <hr>
+                    <div style="width:580px;height:30px;margin:10px auto;">
+                        <i class="fa fa-money"></i>&nbsp;额外功能：
+                        <input type="checkbox" id="top_slide">主界面上方滚动&nbsp;&nbsp;
+                        <input type="checkbox" id="btm_slide">主界面底部滚动&nbsp;&nbsp;
+                        <input type="checkbox" id="room_slide">主题房名旁滚动&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日期&nbsp;<i class="fa fa-calendar"></i>
+                    </div>                 
+                    <div style="width:580px;height:30px;margin:5px auto 0px auto;text-align:center">
+                        <button style="width:100px;margin:0px 5px" onclick="rex_post()">发送</button>
+                        <button style="width:100px;margin:0px 5px" onclick="rex_clear()">清除</button>
+                    </div>
+                    <script type="text/javascript">
+                        $(function () {
+                            $("#rex_div").hide();
+                            $("#rex_div").css({
+                                "left": ($(window).width() - 750) / 2 + "px",
+                                "margin-top": "auto"
+                            });
+                        });
+
+                        function rex_string(id, a, b) {
+                            var rex = $("#" + id).val();
+                            var reg = /[^\u4E00-\u9FA5]/;
+                            var x = 0;
+                            var y = 0;
+                            for (var i = rex.length - 1; i >= 0; i--) {
+                                if (reg.test(rex[i])) {
+                                    x++;//英文字母数目
+                                } else {
+                                    y++;//汉字数目
+                                }
+                            }
+                            if (x <= y) {
+                                if (rex.length > a) {
+                                    var c = rex.length - a;
+                                    var d = rex.substring(0, a);
+                                    $("#" + id).val(d);
+                                }
+                            } else {
+                                if (rex.length > b) {
+                                    var c = rex.length - b;
+                                    var d = rex.substring(0, b);
+                                    $("#" + id).val(d);
+                                }
+                            }
+                        }
+
+                        function rex_post() {
+                            if ($("#adVendor").val() === "" || $("#adTitle").val() === "" || $("#adContent").val() === "") {
+                                alert('请完整填写后上传。');
+                            } else {
+                                $('.loading-chat-wrapper').show();
+                                var rexJson = {
+                                    username: currentUser.username,
+                                    vendor: $("#adVendor").val(),
+                                    title: $("#adTitle").val(),
+                                    link: $("#adUrl").val(),
+                                    contents: $("#adContent").val(),
+                                    top_slide: $("#top_slide").attr('checked'),
+                                    btm_slide: $("#btm_slide").attr('checked'),
+                                    room_slide: $("#room_slide").attr('checked'),
+                                    rex_time1: $("#rex_time1").val(),
+                                    rex_time2: $("#rex_time2").val(),
+                                    image: $("#adImage").val()
+                                };
+                                // alert(rexJson['rex_shopname']+","+rexJson['rex_shoptittle']+","+rexJson['rex_shopurl']+","+rexJson['rex_shopcontent']+","+rexJson['rex_up']+","+rexJson['rex_down']+","+rexJson['rex_beside']+","+rexJson['rex_time1']+","+rexJson['rex_time2']+","+rexJson['rex_shopimg']);
+                                //此处可查看json值
+                                Chat.socket.send(com_code.USER_AD + JSON.stringify(rexJson));
+                                if (document.getElementById('adImage').files[0] !== null) {
+                                    sendFile('adImage');
+                                }
+                            }
+                        }
+                        function rex_open() {
+                            $("balance").html($("credit").text());
+                            $("#rex_div").show();
+                            rex_clear();
+                        }
+                        function rex_clear() {
+                            $("#rex_all input[type='checkbox']").attr('checked', false);
+                            $("#rex_all input[type='text']").val('');
+                            $("#adContent").val('');
+                        }
+                        function rex_close() {
+                            $("#rex_div").hide();
+                        }
+                        function rex_url() {
+                            var url = $("#adUrl").val();
+                            var reg = /^http:\/\/([a-zA-Z0-9]){1,150}[\.]{1}.{1,150}$/;
+                            if (!reg.test(url)) {
+                                alert("请输入正确的链接格式，如（http://www.baidu.com）");
+                                $("#adUrl").val("http://");
+                            }
+                        }
+                        function rex_img() {
+                            var filepath = $("#adImage").val();
+                            var extStart = filepath.lastIndexOf(".");
+                            var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+                            if (ext !== ".BMP" && ext !== ".PNG" && ext !== ".GIF" && ext !== ".JPG" && ext !== ".JPEG") {
+                                alert("图片限于bmp,png,gif,jpeg,jpg格式");
+                                $("#adImage").after($("#adImage").clone().val(""));
+                                $("#adImage").remove();
+                                $("#rex_imgurl").val("");
+                            } else {
+                                if ($("#adImage")[0].files[0].size > 3 * 1024 * 1024) {
+                                    alert("您上传的附件过大，请上传3M以内的图片");
+                                    $("#adImage").after($("#adImage").clone().val(""));
+                                    $("#adImage").remove();
+                                    $("#rex_imgurl").val("");
+                                } else {
+                                    $("#rex_imgurl").val(filepath);
+                                }
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>            
     </body>
 </html>
