@@ -1,0 +1,23 @@
+var ROOG_BG_BASEPATH = "public/img/roombg/";
+var ROOM_BG_MAP={};
+ROOM_BG_MAP['大厅']="dt.jpg";
+ROOM_BG_MAP['职业']="zy.jpg";
+ROOM_BG_MAP['房产']="fc.jpg";
+ROOM_BG_MAP['小商品和二手货']="xxp.jpg";
+ROOM_BG_MAP['金融']="jr.jpg";
+ROOM_BG_MAP['医疗健康']="yl.jpg";
+ROOM_BG_MAP['教育']="jy.jpg";
+ROOM_BG_MAP['餐饮&酒吧']="cy.jpg";
+ROOM_BG_MAP['派对']="pd.jpg";
+ROOM_BG_MAP['交友']="jyou.jpg";
+ROOM_BG_MAP['失物招领']="sw.jpg";
+
+var SYS_MES_COLOR_DEFAULT='gray';
+var SYS_MES_COLOR={};
+SYS_MES_COLOR['my']='';
+SYS_MES_COLOR['other']='';
+SYS_MES_COLOR['info_user_room_change']='yellow';
+SYS_MES_COLOR['info_user_exit']='#ff0000';
+SYS_MES_COLOR['info_user_join']='blue';
+SYS_MES_COLOR['general']='';
+SYS_MES_COLOR['prev']='';

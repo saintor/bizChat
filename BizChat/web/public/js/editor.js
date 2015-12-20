@@ -1,7 +1,7 @@
 /**
  * Created by jimmy on 10/1/15.
  */
-function editorInit(fileImg) {
+function editorInit() {
     var editor = $('.editor').wysiwyg({
         classes: 'some-more-classes',
         placeholder: '请输入...',
@@ -13,17 +13,17 @@ function editorInit(fileImg) {
                 popup: function ($popup, $button) {
                     var list_smilies = [];
                     for (var i = 1; i < 75; i++) {
-                        list_smilies.push('<img src="public/img/emotion/' + i + '.gif" width="16" height="16" alt="" />')
+                        list_smilies.push('<img src="public/img/emotion/' + i + '.gif" width="16" height="16" alt="" />');
                     }
                     console.log(list_smilies);
                     var $smilies = $('<div/>').addClass('wysiwyg-toolbar-smilies')
                             .attr('unselectable', 'on');
                     $.each(list_smilies, function (index, smiley) {
-                        if (index != 0)
+                        if (index !== 0)
                             $smilies.append(' ');
                         var $image = $(smiley).attr('unselectable', 'on');
                         // Append smiley
-                        var imagehtml = ' ' + $('<div/>').append($image.clone()).html() + ' ';
+                        var imagehtml = $('<div/>').append($image.clone()).html();
                         $image
                                 .css({cursor: 'pointer'})
                                 .click(function (event) {
@@ -56,7 +56,7 @@ function editorInit(fileImg) {
                         top: top + 'px'
                     });
                     $('.wysiwyg-toolbar-smilies').click(function () {
-                        $('.wysiwyg-popup').hide()
+                        $('.wysiwyg-popup').hide();
                     });
                     // prevent applying position
                     return false;
@@ -67,11 +67,11 @@ function editorInit(fileImg) {
                 title: '字体颜色',
                 image: '\uf1fc'
             },
-            dummybutton1: {
+            sendfile: {
                 title: "上传图片",
-                image: fileImg,
+                image: arguments[0],
                 click: function ($button) {
-                    $('#upload-image').click()
+                    $('#upload-image').click();
                 },
                 showstatic: true    // wanted on the toolbar
             },
@@ -79,6 +79,14 @@ function editorInit(fileImg) {
                 title: '插入链接',
                 image: '\uf08e',
                 showstatic: true
+            },
+            exchange: {
+                title: "发送币值",
+                image: arguments[1],
+                click: function ($button) {
+
+                },
+                showstatic: true    // wanted on the toolbar
             }
         },
         submit: {
@@ -93,5 +101,5 @@ function editorInit(fileImg) {
         }
     });
 
-
 }
+

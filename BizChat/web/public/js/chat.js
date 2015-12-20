@@ -2,13 +2,15 @@ var Chat = {};
 Chat.socket = null;
 var userlist = [];
 var roomlist = [];
+var slidelist = [];
 var clientname;
 var roomname;
 var currentUser;
 var isNewLine = true;
-var msgNum = 0;
+//var msgNum = 0;
 var chat_history;
 var privateChats = {};
+var privateUnreadMsg = {};
 var roomChanged = false;
 var cIndex = 1;
 var wIndex = 1;
@@ -23,7 +25,8 @@ var com_code = {
     ROOM_CHANGE: CHAT_COM_PRRFIX + 'RMCG ',
     USER_NEWS: CHAT_COM_PRRFIX + 'NEWS ',
     USER_AD: CHAT_COM_PRRFIX + 'UADS ',
-    PREV_CHAT: CHAT_COM_PRRFIX + 'PTXT '
+    PREV_CHAT: CHAT_COM_PRRFIX + 'PTXT ',
+    ROOM_SLIDE: CHAT_COM_PRRFIX + 'RSLD '
 };
 Chat.login = function (host) {
     if ('WebSocket' in window) {
@@ -69,6 +72,7 @@ Chat.login = function (host) {
                 if (currentUser.toString() !== "false") {
                     $('.login-wrapper').hide();
                     $('.dialog-wrapper').show();
+                    window_max = false;
                     roomname = "大厅";
                     Console.tip(roomname);
                     $('.room-name').html(roomname);
@@ -151,6 +155,23 @@ Chat.com = function () {
                     }
                     return "false";
                 };
+                $(".folder").on("click", function () {
+                    if(!$(this).hasClass('open')){
+                        //alert($(this).parent("li").parent("ul").children().size());
+                        var mCount = 0;
+                        $(this).next().find("font span").each(function(i,n){
+                            var obj = $(n);
+                            mCount+=convertInt(obj.html());
+                        }); 
+                        if($(this).has('font').size()==0){
+                            $(this).append("&nbsp;<font size='1'>("+mCount+")</font>");
+                        }else{
+                            $(this).children('font:first').text("("+mCount+")");
+                        }                        
+                    }else{
+                        $(this).children("font").remove();
+                    }
+                });
                 $(".tree a").on("click", function () {
                     var base;
                     if ($(this).parent("li").parent("ul").prev().text() === '') {
@@ -162,6 +183,8 @@ Chat.com = function () {
                     if (roomname === result) {
                         Console.log("你目前已在 <i>" + result + "</i> 房间", 'general', null, '.threadv0');
                     } else {
+                        //a:panxw
+                        Chat.switchBgImage(result);
                         Chat.socket.send(com_code.ROOM_CHANGE + roomname + "~" + result + "~" + clientname);
                         if (roomChanged === false) {
                             $('.loading-chat-wrapper').show();
@@ -189,6 +212,7 @@ Chat.com = function () {
                     Console.log(userName, 'info_user_exit', null, '.threadv0');
                 }
                 var newCount = parseInt($("#" + roomID).find("span").text()) - 1;
+                //Chat.refPeopleCount(roomName,-1);
                 if (newCount > 0) {
                     $("#" + roomID).find("span").text(newCount);
                 } else {
@@ -213,11 +237,14 @@ Chat.com = function () {
                 }
                 $("#" + rfc[0].roomID).find("img.usersIn").addClass("hover").siblings("img.usersOut").removeClass("hover"); //regardless
                 $("#" + rfc[0].roomID).find("span").text(userlist.length);
+                //Chat.refPeopleCount(roomName,1);
             } else if (message.data.indexOf("*UCGRM") >= 0) {
                 jsonStr = message.data.substring(7, message.data.length);
                 rfc = eval("(" + jsonStr + ")");
+                //Chat.refPeopleCount(rfc.oldRoom,rfc.oldCount-convertInt($("#" + rfc.oldID).find("span").text())); 
+                //Chat.refPeopleCount(rfc.newRoom,rfc.newCount-convertInt($("#" + rfc.newID).find("span").text())); 
                 $("#" + rfc.oldID).find("span").text(rfc.oldCount);
-                $("#" + rfc.newID).find("span").text(rfc.newCount);
+                $("#" + rfc.newID).find("span").text(rfc.newCount);                
                 if (rfc.newCount > 0) {
                     //$("#"+rfc.newID).find("img").attr("src", "public/img/usersIn.png");
                     $("#" + rfc.newID).find("img.usersIn").addClass("hover").siblings("img.usersOut").removeClass("hover");//.attr("src", "public/img/usersIn.png");
@@ -247,7 +274,7 @@ Chat.com = function () {
                     $('.userlist').show();
                     Console.tip("-->" + roomname);
                     Console.log(chat_history, 'prev', null, '.threadv0');
-                    roomChanged = false;
+                    roomChanged = true;
                 } else if (roomname === rfc.oldRoom) {
                     for (var k = 0; k < userlist.length; k++) {
                         if (userlist[k].username === rfc.userName) {
@@ -321,23 +348,28 @@ Chat.com = function () {
                 var msg = message.data.substr(com_code.PRIV_CHAT.length);
                 var data = eval("(" + msg + ")");
                 console.log(data);
-                if (privateChats[data.sender] === undefined) {
-                    msgNum++;
-                    showMsgNum(msgNum);
-                    //sender reciver message
-                    insertUnread(data.sender, data.message);
-                } else {
-                    for (var i = 0; i < userlist.length; i++) {
-                        if (userlist[i].username === data.sender) {
-                            Console.log(data.message, 'other', userlist[i], '.threadv' + privateChats[data.sender]);
-                            break;
-                        }
+                if (typeof(privateChats[data.sender]) =='undefined') {
+                    if(typeof(privateUnreadMsg[data.sender]) =='undefined'){
+                        showMsgNum(1);
+                        insertUnread(data.sender);
+                        privateUnreadMsg[data.sender]=[data.message];
+                    }else{
+                        var messageArray = privateUnreadMsg[data.sender];
+                        messageArray[messageArray.length] = data.message;
                     }
+                } else {
+                    fillSenderMsg(data.sender,data.message);
                     //Console.log(data.message, 'other', currentUser, '.threadv' + privateChats[reciever]);
+                    
                 }
             } else if (message.data.indexOf(com_code.PREV_CHAT) >= 0) {
                 chat_history = message.data.substr(com_code.PREV_CHAT.length);
                 roomChanged = true;
+            } else if (message.data.indexOf(com_code.ROOM_SLIDE) >= 0) {
+                var slide = new Object();
+                slide.id = message.data.substring(com_code.ROOM_SLIDE.length, message.data.indexOf('~'));
+                slide.info = message.data.substr(message.data.indexOf('~') + 1);
+                slidelist.push(slide);
             } else if (message.data.indexOf(com_code.USER_AD) >= 0) {
                 var data = message.data.substr(com_code.USER_AD.length);
                 var userName = data.substring(0, data.indexOf("~"));
@@ -352,6 +384,28 @@ Chat.com = function () {
                     Console.list(userlist[i]);
                 }
                 showProfile(userlist, currentUser);
+                if (userName === currentUser.username) {
+                    $('.loading-chat-wrapper').hide();
+                    alert('信息发送成功！');
+                    $("#rex_div").hide();
+                }
+                var timer_id;
+                var timeSeed = 0;
+                timer_id = window.setInterval(changeColor, 500);
+
+                function changeColor() {
+                    if ($("adTitle" + userName).text() !== ('无信息')) {
+                        var color;
+                        timeSeed++;
+                        if (timeSeed >= 60) {
+                            window.clearInterval(timer_id);
+                            color = 'Red';
+                        } else
+                            color = timeSeed % 2 === 0 ? 'Red' : 'White';
+                        var styledInfo = '<font size=2 color="' + color + '">&nbsp;&nbsp;' + info + '</font>';
+                        $("adTitle" + userName).html(styledInfo);
+                    }
+                }
             }
             else {
                 console.log(message.data);
@@ -375,44 +429,67 @@ Chat.com = function () {
 };
 Chat.initialize = function () {
     if (window.location.protocol === 'http:') {
-        Chat.login('ws://' + window.location.host + '/BizChat/chat');
-        //Chat.login('ws://223.167.255.254:8080/BizChat/chat');
+        //Chat.login('ws://' + window.location.host + '/BizChat/chat');
+        Chat.login('ws://120.25.151.75:8080/BizChat/chat');
     } else {
         //Chat.connect('ws://192.168.11.79/BizChat/chat');
-        Chat.login('ws://223.167.255.254:8080/BizChat/chat');
+        Chat.login('ws://120.25.151.75:8080/BizChat/chat');
     }
+};
+//a:panxw
+Chat.switchBgImage=function(catgFullname){
+    var name = getCatgRootname(catgFullname);
+    var imgpath = ROOG_BG_BASEPATH+ROOM_BG_MAP[name];
+   $('.chat-thread').css('background','url('+imgpath+') no-repeat');
+};
+//a:panxw discarded
+Chat.refPeopleCount=function(fullRoomName,qty){
+    var rootName = getCatgRootname(fullRoomName);
+    $('.tree').children('.folder:not(.open)').each(function(i,n){
+      var obj = $(n);
+      if(obj.children(":first").html()==rootName){
+          if(obj.has('font').size()==0){
+              obj.append("&nbsp;<font size='1'>("+qty+")</font>");
+          }else{
+              var oriqtyString = obj.children('font:first').html();
+              var oriQty = parseInt(oriqtyString.substring(1,oriqtyString.length-1));
+              obj.children('font:first').text(oriQty+qty);
+          }
+      }
+    }); 
 };
 var Console = {};
 Console.log = function (message, type, user, window) {
+    var mFontColor = getSysMesColor(type);
     if (type === 'my') {
         var avatar = "background-image:url('" + user.avatar + "')";
         console.log(avatar);
-        $('<p class="dialog-name">' + user.username + '</p><li class="my-chat" style="break-word"><span class="chat-my-avatar" style="' + avatar + '"></span>' + htmlDecode(message) + '</li>').appendTo(window);
+        $('<p class="dialog-name">' + user.username + '</p><li class="my-chat" style="break-word;color:'+mFontColor+'"><span class="chat-my-avatar" style="' + avatar + '"></span>' + htmlDecode(message) + '</li>').appendTo(window);
         $('.wysiwyg-editor').html('');
         scrollBack(window);
     } else if (type === 'other') {
         var avatar = "background-image:url('" + user.avatar + "')";
-        $('<p class="dialog-name-other">' + user.username + '</p><li class="other-chat" style="break-word"><span class="chat-other-avatar" style="' + avatar + '"></span>' + htmlDecode(message) + '</li>').appendTo(window);
+        $('<p class="dialog-name-other">' + user.username + '</p><li class="other-chat" style="break-word;color:'+mFontColor+'"><span class="chat-other-avatar" style="' + avatar + '"></span>' + htmlDecode(message) + '</li>').appendTo(window);
         scrollBack(window);
     } else if (type === 'info_user_room_change') {
         var messages = message.split(',');
-        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i><u>' + messages[0] + '</u></i></strong></span>&nbsp刚离开去了<i><strong>' + messages[1]
+        $('<li class="sys_info gray" style="color:'+mFontColor+'"><i class="fa fa-info-circle"></i><span class="user"><strong><i><u>' + messages[0] + '</u></i></strong></span>&nbsp刚离开去了<i><strong>' + messages[1]
                 + '</strong></i> 房间</li>').appendTo(window);
         scrollBack(window);
     } else if (type === 'info_user_exit') {
-        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user"><strong><i><u>' + message + '</u></i></strong></span>&nbsp刚登出系统.</li>').appendTo(window);
+        $('<li class="sys_info gray" style="color:'+mFontColor+'"><i class="fa fa-info-circle"></i><span class="user"><strong><i><u>' + message + '</u></i></strong></span>&nbsp刚登出系统.</li>').appendTo(window);
         scrollBack(window);
     } else if (type === 'info_user_join') {
-        $('<li class="sys_info oliver"><img src="public/img/info.png"><span class="user"><strong><i><u>' + message + '</i></u></strong></span>&nbsp刚进入房间</li>').appendTo(window);
+        $('<li class="sys_info" color="Brown" style="color:'+mFontColor+'"><i class="fa fa-info-circle"></i><span class="user"><strong><i><u>' + message + '</i></u></strong></span>&nbsp刚进入房间</li>').appendTo(window);
         scrollBack(window);
     } else if (type === 'general') {
-        $('<li class="sys_info gray"><img src="public/img/info.png"><span class="user">' + message + '</span></li>').appendTo(window);
+        $('<li class="sys_info gray" style="color:'+mFontColor+'"><i class="fa fa-info-circle"></i><span class="user">' + message + '</span></li>').appendTo(window);
         scrollBack(window);
     } else if (type === 'prev') {
         if (message.indexOf('房内已长时间') === 0) {
-            $('<li class="sys_info gray chat_history"><img src="public/img/info.png"><span class="user">' + htmlDecode(message) + '</span></li>').appendTo(window);
+            $('<li class="sys_info gray chat_history" style="margin-top:20px;color:'+mFontColor+'"><i class="fa fa-info-circle"></i><span class="user">' + htmlDecode(message) + '</span></li>').appendTo(window);
         } else {
-            $('<li class="sys_info gray chat_history"><span class="user">' + htmlDecode(message) + '</span></li>').appendTo(window);
+            $('<li class="sys_info gray chat_history" style="margin-top:20px;color:'+mFontColor+'"><span class="user">' + htmlDecode(message) + '</span></li>').appendTo(window);
         }
         scrollBack(window);
     }
@@ -428,9 +505,9 @@ Console.log = function (message, type, user, window) {
 Console.list = function (user) {
     var userAdClass = 'ad' + user.username;
     var color = user.info === '无信息' ? 'silver' : 'red';
-    var credit = user.username === currentUser.username ? '&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-credit-card"></i>&nbsp;0.00' : '';
+    var credit = user.username === currentUser.username ? '&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-credit-card"></i>&nbsp;<credit>0.00</credit>' : '';
     $('<li><div class="avatar-left"><img src="' + user.avatar + '" width="32" height="32"></div><div class="info"><p class="tab-name">' + user.username + '<i class="fa fa-sort-down down"></i>' + credit + '</p>\n\
-<p> <ul class="' + userAdClass + '"><font size=2 color="' + color + '")>&nbsp;&nbsp;' + user.info + '</font>' + adDetail(user) + '</ul></p></div></li>').appendTo('.user-list');
+<p> <ul class="' + userAdClass + '" style="text-overflow:ellipsis;white-space:nowrap;overflow:hidden;"><font size=2 color="' + color + '">&nbsp;&nbsp;<adTitle' + user.username + '>' + user.info + '</' + user.username + 'adTitle></font>' + adDetail(user) + '</ul></p></div></li>').appendTo('.user-list');
     $("." + userAdClass + "," + userAdClass + " li").mouseover(function () {
         $("." + userAdClass + " div").show();
     }).mouseout(
@@ -449,8 +526,8 @@ Console.list = function (user) {
 };
 
 Console.tip = function (tip) {
-    $('<div class="clear-both"></div><p class="tip animated bounceInLeft">' + tip + '</p>').appendTo('#console');
-    $('.tip').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+    $('<div class="clear-both"></div><p class="tip animated bounceInLeft">' + tip + '</p>').appendTo('.chat-wrapper');
+    $('.tip,.tipPriv').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
         $(this).removeClass('animated bounceInLeft');
     });
     animateDom();
